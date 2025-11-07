@@ -1,0 +1,30 @@
+{
+  "name": "virtual-transactions",
+  "version": "1.0.0",
+  "description": "Virtual transactions project with public form, admin dashboard, and secure API",
+  "private": true,
+  "workspaces": [
+    "client",
+    "admin",
+    "api"
+  ],
+  "scripts": {
+    "dev:client": "npm run dev --workspace=client",
+    "dev:admin": "npm run dev --workspace=admin",
+    "dev:api": "npm run dev --workspace=api",
+    "dev": "npm-run-all --parallel dev:client dev:admin dev:api",
+    "build": "npm run build --workspaces",
+    "build:client": "npm run build --workspace=client",
+    "build:admin": "npm run build --workspace=admin",
+    "build:api": "npm run build --workspace=api",
+    "test": "npm run test --workspaces",
+    "lint": "npm run lint --workspaces",
+    "seed": "npm run seed --workspace=api"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

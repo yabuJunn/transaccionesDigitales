@@ -1,0 +1,81 @@
+[
+  {
+    "invoiceDate": "1/07/2025",
+    "invoiceNumber": "186",
+    "invoiceStatus": "PAID",
+    "moneyTransmitterCode": "GLOBAN CAPITAL",
+    "sender": {
+      "fullName": "DEMBA KASSE",
+      "address": "6838 GREBE PLACE",
+      "phone1": "3477181827",
+      "phone2": null,
+      "zipCode": "44122",
+      "cityCode": "PHILADELPHIA",
+      "stateCode": "Pennsylvania",
+      "countryCode": "United States",
+      "id1": {
+        "type": "FL Driver's License",
+        "number": "M123586402"
+      },
+      "id2": null
+    },
+    "receiver": {
+      "fullName": "KADIA THIAM",
+      "address": "123 Esquina 7",
+      "phone1": "201-452-5285",
+      "phone2": null,
+      "zipCode": "33462",
+      "cityCode": "Bogota",
+      "stateCode": "Senegal",
+      "countryCode": "Colombia",
+      "id1": null,
+      "id2": null
+    },
+    "amountSent": "$20,00",
+    "fee": "$15,00",
+    "paymentMode": "WIRE TRANSFER",
+    "correspondentId": "BANCOLOMBIA",
+    "bankName": "",
+    "accountNumber": "123456369"
+  },
+  {
+    "invoiceDate": "1/07/2025",
+    "invoiceNumber": "564",
+    "invoiceStatus": "PAID",
+    "moneyTransmitterCode": "GLOBAN CAPITAL",
+    "sender": {
+      "fullName": "JOHN DOE",
+      "address": "123 Main Street",
+      "phone1": "555-1234",
+      "phone2": null,
+      "zipCode": "10001",
+      "cityCode": "New York",
+      "stateCode": "New York",
+      "countryCode": "United States",
+      "id1": {
+        "type": "Passport",
+        "number": "P123456"
+      },
+      "id2": null
+    },
+    "receiver": {
+      "fullName": "JANE SMITH",
+      "address": "456 Oak Avenue",
+      "phone1": "555-5678",
+      "phone2": null,
+      "zipCode": "20001",
+      "cityCode": "Washington",
+      "stateCode": "District of Columbia",
+      "countryCode": "United States",
+      "id1": null,
+      "id2": null
+    },
+    "amountSent": "$200,00",
+    "fee": "$10,00",
+    "paymentMode": "BANK TRANSFER",
+    "correspondentId": "CHASE BANK",
+    "bankName": "Chase Bank",
+    "accountNumber": "987654321"
+  }
+]
+
