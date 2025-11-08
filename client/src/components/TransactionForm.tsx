@@ -23,8 +23,8 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
       cityCode: '',
       stateCode: '',
       countryCode: '',
-      id1: null,
-      id2: null,
+      id1: { type: '', number: '' },
+      id2: { type: '', number: '' },
     },
     receiver: {
       fullName: '',
@@ -35,8 +35,8 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
       cityCode: '',
       stateCode: '',
       countryCode: '',
-      id1: null,
-      id2: null,
+      id1: { type: '', number: '' },
+      id2: { type: '', number: '' },
     },
     amountSent: '',
     fee: '',
@@ -53,16 +53,48 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
     
     if (name.startsWith('sender.')) {
       const field = name.replace('sender.', '');
-      setFormData((prev) => ({
-        ...prev,
-        sender: { ...prev.sender, [field]: value },
-      }));
+      
+      // Handle nested id fields (id1.type, id1.number, id2.type, id2.number)
+      if (field.startsWith('id1.') || field.startsWith('id2.')) {
+        const [idField, idProperty] = field.split('.');
+        setFormData((prev) => ({
+          ...prev,
+          sender: {
+            ...prev.sender,
+            [idField]: {
+              ...(prev.sender[idField as 'id1' | 'id2'] || { type: '', number: '' }),
+              [idProperty]: value,
+            },
+          },
+        }));
+      } else {
+        setFormData((prev) => ({
+          ...prev,
+          sender: { ...prev.sender, [field]: value },
+        }));
+      }
     } else if (name.startsWith('receiver.')) {
       const field = name.replace('receiver.', '');
-      setFormData((prev) => ({
-        ...prev,
-        receiver: { ...prev.receiver, [field]: value },
-      }));
+      
+      // Handle nested id fields (id1.type, id1.number, id2.type, id2.number)
+      if (field.startsWith('id1.') || field.startsWith('id2.')) {
+        const [idField, idProperty] = field.split('.');
+        setFormData((prev) => ({
+          ...prev,
+          receiver: {
+            ...prev.receiver,
+            [idField]: {
+              ...(prev.receiver[idField as 'id1' | 'id2'] || { type: '', number: '' }),
+              [idProperty]: value,
+            },
+          },
+        }));
+      } else {
+        setFormData((prev) => ({
+          ...prev,
+          receiver: { ...prev.receiver, [field]: value },
+        }));
+      }
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
@@ -73,7 +105,26 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
     setLoading(true);
 
     try {
-      await submitTransaction(formData);
+      // Clean up empty ID2 fields before submitting (ID1 is required)
+      const cleanedData = {
+        ...formData,
+        sender: {
+          ...formData.sender,
+          id1: formData.sender.id1 || null,
+          id2: formData.sender.id2?.type && formData.sender.id2?.number 
+            ? formData.sender.id2 
+            : null,
+        },
+        receiver: {
+          ...formData.receiver,
+          id1: formData.receiver.id1 || null,
+          id2: formData.receiver.id2?.type && formData.receiver.id2?.number 
+            ? formData.receiver.id2 
+            : null,
+        },
+      };
+      
+      await submitTransaction(cleanedData);
       onSuccess('Transacción enviada exitosamente');
       // Reset form
       setFormData({
@@ -90,8 +141,8 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
           cityCode: '',
           stateCode: '',
           countryCode: '',
-          id1: null,
-          id2: null,
+          id1: { type: '', number: '' },
+          id2: { type: '', number: '' },
         },
         receiver: {
           fullName: '',
@@ -102,8 +153,8 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
           cityCode: '',
           stateCode: '',
           countryCode: '',
-          id1: null,
-          id2: null,
+          id1: { type: '', number: '' },
+          id2: { type: '', number: '' },
         },
         amountSent: '',
         fee: '',
@@ -239,6 +290,73 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
             required
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+        </div>
+      </div>
+
+      {/* ID Documents Section */}
+      <div className="mt-6 space-y-4">
+        <h4 className="text-lg font-semibold text-gray-700">Documentos de Identificación</h4>
+        
+        {/* ID 1 */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-md">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Tipo de ID 1 *
+            </label>
+            <input
+              type="text"
+              name={`${prefix}.id1.type`}
+              value={person.id1?.type || ''}
+              onChange={handleChange}
+              placeholder="Ej: FL Driver's licence"
+              required
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Número de ID 1 *
+            </label>
+            <input
+              type="text"
+              name={`${prefix}.id1.number`}
+              value={person.id1?.number || ''}
+              onChange={handleChange}
+              placeholder="Ej: M123586402"
+              required
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+        </div>
+
+        {/* ID 2 */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-md">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Tipo de ID 2
+            </label>
+            <input
+              type="text"
+              name={`${prefix}.id2.type`}
+              value={person.id2?.type || ''}
+              onChange={handleChange}
+              placeholder="Ej: Passport"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Número de ID 2
+            </label>
+            <input
+              type="text"
+              name={`${prefix}.id2.number`}
+              value={person.id2?.number || ''}
+              onChange={handleChange}
+              placeholder="Ej: 123456789"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
         </div>
       </div>
     </div>

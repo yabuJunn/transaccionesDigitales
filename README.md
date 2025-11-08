@@ -22,15 +22,44 @@ virtual-transactions/
 
 ### 1. Instalación
 
-```bash
-# Instalar dependencias de todos los workspaces
-npm install
+**Si tienes problemas de instalación en Windows (especialmente errores de `postinstall` o `patch-package`), usa el script de instalación segura:**
 
-# O instalar individualmente:
-cd client && npm install
-cd ../admin && npm install
-cd ../api && npm install
+```powershell
+# PowerShell (Recomendado - evita problemas con postinstall)
+.\install-safe.ps1
 ```
+
+**O si prefieres reinstalación completa:**
+
+```powershell
+# Reinstalación completa
+.\reinstall.ps1
+```
+
+**Instalación manual (ignorando scripts postinstall):**
+
+```bash
+# Limpiar primero
+.\clean.ps1
+
+# Instalar ignorando scripts postinstall (evita errores de patch-package)
+npm install --ignore-scripts
+
+# Instalar individualmente en cada proyecto
+cd api && npm install --ignore-scripts && cd ..
+cd client && npm install --ignore-scripts && cd ..
+cd admin && npm install --ignore-scripts && cd ..
+```
+
+**Nota:** 
+- Si encuentras errores de "comando no encontrado" (`tsx`, `vite`), asegúrate de instalar las dependencias individualmente en cada carpeta.
+- Si encuentras errores de `postinstall` o `patch-package`, usa `--ignore-scripts` para evitar problemas.
+- Los scripts ahora usan `npx` para encontrar los binarios automáticamente.
+
+Para más detalles, consulta:
+- `FIX_INSTALLATION.md` - Problemas generales de instalación
+- `INSTALL_FIX.md` - Problemas de comandos no encontrados
+- `POSTINSTALL_FIX.md` - Problemas con scripts postinstall
 
 ### 2. Configuración de Firebase
 
@@ -436,6 +465,35 @@ Si usas custom claims, el usuario debe:
 3. El nuevo token incluirá el custom claim
 
 ## 🐛 Troubleshooting
+
+### Problemas de Instalación (Windows)
+
+Si encuentras errores como `EBUSY`, `EPERM`, o archivos bloqueados durante `npm install`:
+
+**Solución Rápida:**
+
+1. **Usar script de limpieza:**
+   ```powershell
+   # PowerShell
+   .\clean.ps1
+   
+   # O CMD
+   clean.cmd
+   ```
+
+2. **Luego instalar:**
+   ```bash
+   npm install
+   ```
+
+**Solución Manual:**
+
+1. Cierra todos los editores y terminales
+2. Elimina `node_modules` y `package-lock.json` de todas las carpetas
+3. Limpia el caché: `npm cache clean --force`
+4. Reinstala: `npm install`
+
+Para más detalles, consulta `FIX_INSTALLATION.md`.
 
 ### Error: "Missing Firebase Admin credentials"
 

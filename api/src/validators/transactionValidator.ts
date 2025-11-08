@@ -67,6 +67,28 @@ export const transactionValidationRules: ValidationChain[] = [
     .isString()
     .trim(),
   
+  body('sender.id1.type')
+    .notEmpty()
+    .withMessage('Sender ID 1 type is required')
+    .isString()
+    .trim(),
+  
+  body('sender.id1.number')
+    .notEmpty()
+    .withMessage('Sender ID 1 number is required')
+    .isString()
+    .trim(),
+  
+  body('sender.id2.type')
+    .optional()
+    .isString()
+    .trim(),
+  
+  body('sender.id2.number')
+    .optional()
+    .isString()
+    .trim(),
+  
   body('receiver.fullName')
     .notEmpty()
     .withMessage('Receiver full name is required')

@@ -4,15 +4,36 @@
 
 ### 1. Instalación de Dependencias
 
-```bash
-# Desde la raíz del proyecto
-npm install
+**Si tienes problemas de instalación (especialmente errores de postinstall), usa el script de instalación segura:**
 
-# O instalar individualmente:
-cd client && npm install
-cd ../admin && npm install
-cd ../api && npm install
+```powershell
+# PowerShell (Recomendado - evita problemas con postinstall)
+.\install-safe.ps1
 ```
+
+**O si prefieres reinstalación completa:**
+
+```powershell
+# Reinstalación completa
+.\reinstall.ps1
+```
+
+**Instalación manual (ignorando scripts postinstall):**
+
+```bash
+# Limpiar primero
+.\clean.ps1
+
+# Instalar ignorando scripts postinstall (evita errores de patch-package)
+npm install --ignore-scripts
+
+# Instalar individualmente en cada proyecto
+cd api && npm install --ignore-scripts && cd ..
+cd client && npm install --ignore-scripts && cd ..
+cd admin && npm install --ignore-scripts && cd ..
+```
+
+**Nota:** Si encuentras errores de "comando no encontrado" o errores de `postinstall`, usa `--ignore-scripts` para evitar problemas con `patch-package` y scripts postinstall. Consulta `POSTINSTALL_FIX.md` para más detalles.
 
 ### 2. Configuración de Variables de Entorno
 
