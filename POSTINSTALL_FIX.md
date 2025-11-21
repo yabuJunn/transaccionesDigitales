@@ -126,3 +126,6 @@ Si encuentras problemas después de ignorar scripts, puedes:
 3. Verificar los logs de instalación para ver qué script falló
 
 
+
+
+
