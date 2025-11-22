@@ -3,6 +3,7 @@ import { db } from '../config/firebase';
 import { verifyBankToken } from '../middleware/bankAuth';
 import { Timestamp } from 'firebase-admin/firestore';
 import { AuthenticatedRequest } from '../middleware/auth';
+import { serializeTransaction } from '../utils/serializeTransaction';
 
 const router = Router();
 
@@ -60,10 +61,12 @@ router.get(
 
       // Get all matching documents
       const snapshot = await query.get();
-      let transactions = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+      let transactions = snapshot.docs.map((doc) => 
+        serializeTransaction({
+          id: doc.id,
+          ...doc.data(),
+        })
+      );
 
       // Apply client-side filters (for fields that can't be queried directly)
       if (senderName) {

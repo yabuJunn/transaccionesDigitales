@@ -7,6 +7,7 @@ import { parseAmountToCents } from '../utils/amountParser';
 import { parseInvoiceDate } from '../utils/dateParser';
 import { verifyFirebaseToken, AuthenticatedRequest } from '../middleware/auth';
 import { Timestamp } from 'firebase-admin/firestore';
+import { serializeTransaction } from '../utils/serializeTransaction';
 
 const router = Router();
 
@@ -129,10 +130,12 @@ router.get(
       const startIndex = (page - 1) * limit;
       const paginatedDocs = allDocs.slice(startIndex, startIndex + limit);
 
-      const transactions = paginatedDocs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+      const transactions = paginatedDocs.map((doc) => 
+        serializeTransaction({
+          id: doc.id,
+          ...doc.data(),
+        })
+      );
 
       res.json({
         success: true,
@@ -170,10 +173,10 @@ router.get(
 
       res.json({
         success: true,
-        data: {
+        data: serializeTransaction({
           id: doc.id,
           ...doc.data(),
-        },
+        }),
       });
     } catch (error) {
       console.error('Error fetching transaction:', error);

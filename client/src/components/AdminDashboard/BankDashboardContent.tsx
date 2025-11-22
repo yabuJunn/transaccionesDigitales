@@ -51,13 +51,52 @@ const BankDashboardContent = ({
 
   const formatDate = (date: any) => {
     if (!date) return '';
-    const locale = i18n.language === 'es' ? 'es-ES' : 'en-US';
-    if (date.seconds) {
-      return new Date(date.seconds * 1000).toLocaleDateString(locale);
+    
+    // If it's already a string, try to parse it
+    if (typeof date === 'string') {
+      const parsed = new Date(date);
+      if (!isNaN(parsed.getTime())) {
+        const locale = i18n.language === 'es' ? 'es-ES' : 'en-US';
+        return parsed.toLocaleString(locale, {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+      }
+      return date;
     }
+    
+    // If it's a Firestore Timestamp object
+    if (date.seconds !== undefined) {
+      const locale = i18n.language === 'es' ? 'es-ES' : 'en-US';
+      const dateObj = new Date(date.seconds * 1000 + (date.nanoseconds || 0) / 1000000);
+      if (isNaN(dateObj.getTime())) {
+        return 'Invalid Date';
+      }
+      return dateObj.toLocaleString(locale, {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    }
+    
+    // If it's a Date object
     if (date instanceof Date) {
-      return date.toLocaleDateString(locale);
+      const locale = i18n.language === 'es' ? 'es-ES' : 'en-US';
+      return date.toLocaleString(locale, {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
     }
+    
+    // Fallback: try to convert to string
     return String(date);
   };
 

@@ -441,11 +441,10 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
               {t('form.invoiceDate')} *
             </label>
             <input
-              type="text"
+              type="datetime-local"
               name="invoiceDate"
               value={formData.invoiceDate}
               onChange={handleChange}
-              placeholder="1/07/2025"
               required
               className="w-full px-3 py-2 border border-neutral-border bg-neutral-bg rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
             />

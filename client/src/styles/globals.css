@@ -68,6 +68,8 @@
   input[type="password"],
   input[type="number"],
   input[type="date"],
+  input[type="datetime-local"],
+  input[type="time"],
   input[type="tel"],
   input[type="url"],
   input[type="file"],
@@ -87,6 +89,8 @@
   [data-theme="dark"] input[type="password"],
   [data-theme="dark"] input[type="number"],
   [data-theme="dark"] input[type="date"],
+  [data-theme="dark"] input[type="datetime-local"],
+  [data-theme="dark"] input[type="time"],
   [data-theme="dark"] input[type="tel"],
   [data-theme="dark"] input[type="url"],
   [data-theme="dark"] input[type="file"],
@@ -99,6 +103,33 @@
   [data-theme="dark"] option {
     background-color: var(--color-surface) !important;
     color: var(--color-text) !important;
+  }
+  
+  /* Date and datetime-local input icons - light mode (black icon) */
+  input[type="date"]::-webkit-calendar-picker-indicator,
+  input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+    filter: brightness(0);
+    cursor: pointer;
+  }
+  
+  /* Date and datetime-local input icons - dark mode (white icon) */
+  [data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator,
+  [data-theme="dark"] input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+    filter: brightness(0) invert(1);
+    cursor: pointer;
+  }
+  
+  /* Firefox support for date inputs */
+  input[type="date"]::-moz-calendar-picker-indicator,
+  input[type="datetime-local"]::-moz-calendar-picker-indicator {
+    filter: brightness(0);
+    cursor: pointer;
+  }
+  
+  [data-theme="dark"] input[type="date"]::-moz-calendar-picker-indicator,
+  [data-theme="dark"] input[type="datetime-local"]::-moz-calendar-picker-indicator {
+    filter: brightness(0) invert(1);
+    cursor: pointer;
   }
 }
 

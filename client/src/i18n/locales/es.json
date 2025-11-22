@@ -37,7 +37,7 @@
     "uploadReceipt": "Subir Comprobante (Imagen/PDF)",
     "receiptPreview": "Vista Previa del Comprobante",
     "removeReceipt": "Eliminar",
-    "invoiceDate": "Fecha de Factura (d/M/yyyy)",
+    "invoiceDate": "Fecha y Hora de Factura",
     "invoiceNumber": "Número de Factura",
     "invoiceStatus": "Estado de Factura",
     "moneyTransmitterCode": "Código del Transmisor",

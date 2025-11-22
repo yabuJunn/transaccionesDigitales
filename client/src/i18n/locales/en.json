@@ -37,7 +37,7 @@
     "uploadReceipt": "Upload Receipt (Image/PDF)",
     "receiptPreview": "Receipt Preview",
     "removeReceipt": "Remove",
-    "invoiceDate": "Invoice Date (d/M/yyyy)",
+    "invoiceDate": "Invoice Date & Time",
     "invoiceNumber": "Invoice Number",
     "invoiceStatus": "Invoice Status",
     "moneyTransmitterCode": "Money Transmitter Code",
