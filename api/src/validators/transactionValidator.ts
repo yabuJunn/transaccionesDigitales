@@ -67,24 +67,30 @@ export const transactionValidationRules: ValidationChain[] = [
     .isString()
     .trim(),
   
-  body('sender.id1.type')
+  body('sender.roleType')
     .notEmpty()
-    .withMessage('Sender ID 1 type is required')
+    .withMessage('Sender role type is required')
+    .isIn(['Individual', 'Business'])
+    .withMessage('Sender role type must be Individual or Business'),
+  
+  body('sender.idType')
+    .notEmpty()
+    .withMessage('Sender ID type is required')
+    .isIn(['State ID', 'Passport', "Driver's License", 'EIN', 'Foreign ID'])
+    .withMessage('Sender ID type must be one of: State ID, Passport, Driver\'s License, EIN, Foreign ID'),
+  
+  body('sender.idNumber')
+    .notEmpty()
+    .withMessage('Sender ID number is required')
     .isString()
     .trim(),
   
-  body('sender.id1.number')
-    .notEmpty()
-    .withMessage('Sender ID 1 number is required')
-    .isString()
-    .trim(),
-  
-  body('sender.id2.type')
+  body('sender.businessName')
     .optional()
     .isString()
     .trim(),
   
-  body('sender.id2.number')
+  body('sender.ein')
     .optional()
     .isString()
     .trim(),
@@ -131,6 +137,34 @@ export const transactionValidationRules: ValidationChain[] = [
     .isString()
     .trim(),
   
+  body('receiver.roleType')
+    .notEmpty()
+    .withMessage('Receiver role type is required')
+    .isIn(['Individual', 'Business'])
+    .withMessage('Receiver role type must be Individual or Business'),
+  
+  body('receiver.idType')
+    .notEmpty()
+    .withMessage('Receiver ID type is required')
+    .isIn(['State ID', 'Passport', "Driver's License", 'EIN', 'Foreign ID'])
+    .withMessage('Receiver ID type must be one of: State ID, Passport, Driver\'s License, EIN, Foreign ID'),
+  
+  body('receiver.idNumber')
+    .notEmpty()
+    .withMessage('Receiver ID number is required')
+    .isString()
+    .trim(),
+  
+  body('receiver.businessName')
+    .optional()
+    .isString()
+    .trim(),
+  
+  body('receiver.ein')
+    .optional()
+    .isString()
+    .trim(),
+  
   body('amountSent')
     .notEmpty()
     .withMessage('Amount sent is required')
@@ -173,5 +207,10 @@ export const transactionValidationRules: ValidationChain[] = [
     .withMessage('Account number is required')
     .isString()
     .trim(),
+  
+  body('receiptUrl')
+    .optional()
+    .isURL()
+    .withMessage('Receipt URL must be a valid URL'),
 ];
 

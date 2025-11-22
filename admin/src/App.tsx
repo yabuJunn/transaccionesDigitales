@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
+import BankDashboard from './components/BankDashboard';
 
 const AppRoutes = () => {
   const { user } = useAuth();
@@ -15,6 +16,14 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/bank"
+        element={
+          <ProtectedRoute>
+            <BankDashboard />
           </ProtectedRoute>
         }
       />

@@ -1,11 +1,16 @@
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useState } from 'react';
+import LandingPage from './components/LandingPage';
 import TransactionForm from './components/TransactionForm';
 import SuccessMessage from './components/SuccessMessage';
 import ErrorMessage from './components/ErrorMessage';
+import LanguageSwitcher from './components/LanguageSwitcher';
+import { useTranslation } from 'react-i18next';
 
-function App() {
+function TransactionFormPage() {
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const { t } = useTranslation();
 
   const handleSuccess = (message: string) => {
     setSuccess(message);
@@ -20,14 +25,17 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
       <div className="max-w-4xl mx-auto">
-        <header className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Formulario de Transacción
-          </h1>
-          <p className="text-gray-600">
-            Complete el formulario para enviar una nueva transacción
-          </p>
-        </header>
+        <div className="flex justify-between items-center mb-8">
+          <header>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              {t('form.title')}
+            </h1>
+            <p className="text-gray-600">
+              {t('form.subtitle')}
+            </p>
+          </header>
+          <LanguageSwitcher />
+        </div>
 
         {success && (
           <SuccessMessage message={success} onClose={() => setSuccess(null)} />
@@ -43,6 +51,17 @@ function App() {
         />
       </div>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/client" element={<TransactionFormPage />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

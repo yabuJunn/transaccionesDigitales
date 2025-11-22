@@ -12,8 +12,11 @@ export interface Person {
   cityCode: string;
   stateCode: string;
   countryCode: string;
-  id1?: IDDocument | null;
-  id2?: IDDocument | null;
+  roleType?: 'Individual' | 'Business';
+  idType?: 'State ID' | 'Passport' | "Driver's License" | 'EIN' | 'Foreign ID';
+  idNumber?: string;
+  businessName?: string;
+  ein?: string;
 }
 
 export interface TransactionInput {
@@ -29,5 +32,6 @@ export interface TransactionInput {
   correspondentId: string;
   bankName: string;
   accountNumber: string;
+  receiptUrl?: string;
 }
 

@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import * as dotenv from 'dotenv';
 import transactionsRouter from './routes/transactions';
+import bankRouter from './routes/bank';
 import './config/firebase'; // Initialize Firebase
 
 dotenv.config();
@@ -59,6 +60,7 @@ app.get('/health', (req, res) => {
 
 // API routes
 app.use('/api/transactions', transactionsRouter);
+app.use('/api/bank', bankRouter);
 
 // 404 handler
 app.use((req, res) => {

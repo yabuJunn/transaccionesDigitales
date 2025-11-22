@@ -1,16 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { auth } from '../config/firebase';
+import { AuthenticatedRequest } from './auth';
 
-export interface AuthenticatedRequest extends Request {
-  user?: {
-    uid: string;
-    email?: string;
-    admin?: boolean;
-    bank?: boolean;
-  };
-}
-
-export async function verifyFirebaseToken(
+export async function verifyBankToken(
   req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
@@ -27,19 +19,23 @@ export async function verifyFirebaseToken(
   try {
     const decoded = await auth.verifyIdToken(idToken);
     
-    // Check custom claim or ADMIN_UIDS env var
+    // Check custom claim or BANK_UIDS env var
+    const bankUids = process.env.BANK_UIDS?.split(',').map(uid => uid.trim()) || [];
+    const isBank = decoded.bank === true || bankUids.includes(decoded.uid);
     const adminUids = process.env.ADMIN_UIDS?.split(',').map(uid => uid.trim()) || [];
     const isAdmin = decoded.admin === true || adminUids.includes(decoded.uid);
 
-    if (!isAdmin) {
-      res.status(403).json({ error: 'Forbidden: Admin access required' });
+    // Bank users or admins can access bank endpoints
+    if (!isBank && !isAdmin) {
+      res.status(403).json({ error: 'Forbidden: Bank or Admin access required' });
       return;
     }
 
     req.user = {
       uid: decoded.uid,
       email: decoded.email,
-      admin: true,
+      admin: isAdmin,
+      bank: isBank || isAdmin, // Admins can also access bank endpoints
     };
 
     next();

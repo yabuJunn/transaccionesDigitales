@@ -94,6 +94,11 @@ FIREBASE_STORAGE_BUCKET=tu-project.appspot.com
 # Opción 1: Lista de UIDs separados por comas
 ADMIN_UIDS=uid1,uid2,uid3
 # Opción 2: Usar custom claims (admin:true) - ver sección de configuración de admin
+
+# Bank Access Control
+# Opción 1: Lista de UIDs separados por comas
+BANK_UIDS=uid1,uid2,uid3
+# Opción 2: Usar custom claims (bank:true) - ver sección de configuración de bank
 ```
 
 **Nota:** Para `FIREBASE_PRIVATE_KEY`, copia el valor completo del campo `private_key` del JSON descargado, incluyendo los saltos de línea `\n`.
@@ -117,7 +122,39 @@ VITE_FIREBASE_PROJECT_ID=tu-project-id
 VITE_FIREBASE_STORAGE_BUCKET=tu-project.appspot.com
 ```
 
-### 3. Configurar Usuario Administrador
+**client/.env.local:**
+```bash
+VITE_API_URL=http://localhost:4000
+VITE_FIREBASE_API_KEY=tu-api-key
+VITE_FIREBASE_AUTH_DOMAIN=tu-project.firebaseapp.com
+VITE_FIREBASE_DATABASE_URL=https://tu-project-default-rtdb.firebaseio.com
+VITE_FIREBASE_PROJECT_ID=tu-project-id
+VITE_FIREBASE_STORAGE_BUCKET=tu-project.appspot.com
+```
+
+### 3. Configurar Firebase Storage
+
+1. Ve a [Firebase Console](https://console.firebase.google.com/)
+2. Selecciona tu proyecto
+3. Ve a **Storage** en el menú lateral
+4. Haz clic en **Empezar** si es la primera vez
+5. Configura las reglas de seguridad para Storage:
+
+```javascript
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Receipts folder - authenticated users can upload, admins/banks can read all
+    match /receipts/{receiptId} {
+      allow read: if request.auth != null && 
+        (request.auth.token.admin == true || request.auth.token.bank == true);
+      allow write: if request.auth != null;
+    }
+  }
+}
+```
+
+### 4. Configurar Usuario Administrador
 
 #### Opción A: Usar Custom Claims (Recomendado)
 
@@ -148,7 +185,38 @@ npx tsx scripts/set-admin-claim.ts <email-del-usuario>
 ADMIN_UIDS=uid-del-usuario-1,uid-del-usuario-2
 ```
 
-### 4. Ejecutar el Proyecto
+### 5. Configurar Usuario Bank (Auditor Bancario)
+
+#### Opción A: Usar Custom Claims (Recomendado)
+
+1. Crea un usuario en Firebase Authentication (email/password) desde la consola de Firebase
+2. Ejecuta el script para establecer el custom claim:
+
+```bash
+cd api
+npm run set-bank-claim <email-del-usuario>
+```
+
+O manualmente usando el script:
+
+```bash
+cd api
+npx tsx scripts/set-bank-claim.ts <email-del-usuario>
+```
+
+**Importante:** El usuario debe cerrar sesión y volver a iniciar sesión para que el custom claim tome efecto.
+
+#### Opción B: Usar Lista de UIDs
+
+1. Crea un usuario en Firebase Authentication
+2. Obtén el UID del usuario desde la consola de Firebase
+3. Agrega el UID a la variable de entorno `BANK_UIDS` en `api/.env`:
+
+```bash
+BANK_UIDS=uid-del-usuario-1,uid-del-usuario-2
+```
+
+### 6. Ejecutar el Proyecto
 
 #### Desarrollo (todos los servicios)
 
@@ -170,7 +238,7 @@ npm run dev:admin
 npm run dev:api
 ```
 
-### 5. Poblar Base de Datos (Opcional)
+### 7. Poblar Base de Datos (Opcional)
 
 Para cargar transacciones de ejemplo:
 
@@ -232,6 +300,15 @@ El sistema verifica acceso de admin de dos formas:
 1. **Custom Claims:** Si el token tiene `admin: true` en los custom claims
 2. **UID Allowlist:** Si el UID está en la variable de entorno `ADMIN_UIDS`
 
+### Validación de Bank
+
+El sistema verifica acceso de bank de dos formas:
+
+1. **Custom Claims:** Si el token tiene `bank: true` en los custom claims
+2. **UID Allowlist:** Si el UID está en la variable de entorno `BANK_UIDS`
+
+**Nota:** Los usuarios con rol `admin` también pueden acceder a los endpoints de bank.
+
 ### Middlewares de Seguridad
 
 - **Helmet:** Headers de seguridad HTTP
@@ -253,6 +330,12 @@ Crea una nueva transacción.
   "invoiceNumber": "186",
   "invoiceStatus": "PAID",
   "moneyTransmitterCode": "GLOBAN CAPITAL",
+  "roleType": "Individual",
+  "idType": "State ID",
+  "idNumber": "123456789",
+  "businessName": "",
+  "ein": "",
+  "receiptUrl": "https://firebasestorage.googleapis.com/...",
   "sender": {
     "fullName": "DEMBA KASSE",
     "address": "6838 GREBE PLACE",
@@ -279,6 +362,14 @@ Crea una nueva transacción.
   "accountNumber": "123456369"
 }
 ```
+
+**Campos nuevos:**
+- `roleType` (opcional): "Individual" o "Business"
+- `idType` (opcional): "State ID", "Passport", "Driver's License", "EIN", "Foreign ID"
+- `idNumber` (opcional): Número de identificación
+- `businessName` (opcional): Nombre de la empresa (requerido si roleType es "Business")
+- `ein` (opcional): EIN de la empresa (requerido si roleType es "Business")
+- `receiptUrl` (opcional): URL del comprobante en Firebase Storage
 
 **Response:**
 ```json
@@ -357,28 +448,127 @@ Cada documento contiene:
   correspondentId: string,
   bankName: string,
   accountNumber: string,
+  roleType?: 'Individual' | 'Business',
+  idType?: 'State ID' | 'Passport' | "Driver's License" | 'EIN' | 'Foreign ID',
+  idNumber?: string,
+  businessName?: string,
+  ein?: string,
+  receiptUrl?: string,
   createdAt: Timestamp,
   raw: object // Datos originales para trazabilidad
 }
 ```
 
+## 🌐 Internacionalización (i18n)
+
+El proyecto incluye soporte para múltiples idiomas (inglés y español). El idioma se guarda en `localStorage` y persiste entre sesiones.
+
+- **Idioma por defecto:** Inglés
+- **Idiomas disponibles:** Inglés (EN), Español (ES)
+- **Cambio de idioma:** Usa el componente `LanguageSwitcher` en el header de cada página
+
+## 📤 Subida de Comprobantes (Receipts)
+
+Los usuarios pueden subir comprobantes (imágenes o PDFs) al crear una transacción:
+
+- **Formatos soportados:** JPEG, PNG, PDF
+- **Tamaño máximo:** 10 MB
+- **Almacenamiento:** Firebase Storage en la carpeta `receipts/`
+- **Acceso:** Solo usuarios con rol admin o bank pueden ver todos los comprobantes
+
+## 🏦 Panel de Auditoría Bancaria
+
+Los usuarios con rol `bank` pueden acceder al panel de auditoría en `/bank` que permite:
+
+- **Filtrar transacciones** por:
+  - Rango de fechas (from/to)
+  - Nombre del remitente
+  - Nombre del receptor
+  - Estado (PENDING, PAID, CANCELLED)
+  - Rango de montos (min/max)
+- **Ver detalles** de cada transacción
+- **Ver/descargar comprobantes** (si están disponibles)
+- **Exportar resultados** como CSV
+
+### Endpoint de Bank
+
+#### `GET /api/bank/transactions`
+
+Endpoint protegido que requiere autenticación con rol bank o admin.
+
+**Query Parameters:**
+- `page` (opcional): Número de página (default: 1)
+- `limit` (opcional): Elementos por página (default: 20)
+- `from` (opcional): Fecha desde (YYYY-MM-DD)
+- `to` (opcional): Fecha hasta (YYYY-MM-DD)
+- `status` (opcional): Filtrar por estado
+- `senderName` (opcional): Buscar por nombre del remitente
+- `receiverName` (opcional): Buscar por nombre del receptor
+- `minAmount` (opcional): Monto mínimo
+- `maxAmount` (opcional): Monto máximo
+- `export` (opcional): Si es `csv`, devuelve un archivo CSV
+
+**Headers:**
+```
+Authorization: Bearer <firebase-id-token>
+```
+
+**Response (JSON):**
+```json
+{
+  "success": true,
+  "data": [...],
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "total": 100,
+    "totalPages": 5
+  }
+}
+```
+
+**Response (CSV):**
+Cuando `export=csv`, devuelve un archivo CSV con las transacciones filtradas.
+
 ## 🧪 Pruebas Manuales
 
-### 1. Probar Formulario Público
+### 1. Probar Landing Page
 
 1. Abre `http://localhost:5173`
-2. Completa el formulario con datos de ejemplo
-3. Envía la transacción
-4. Verifica el mensaje de éxito
+2. Verifica que aparezcan las 3 opciones: Customer, Manager, Bank
+3. Prueba cambiar el idioma (EN/ES)
+4. Verifica que cada botón redirija correctamente
 
-### 2. Probar Panel Admin
+### 2. Probar Formulario Público
+
+1. Abre `http://localhost:5173/client` o haz clic en "I am a customer"
+2. Completa el formulario con datos de ejemplo
+3. Selecciona un rol (Individual o Business)
+4. Si seleccionas Business, completa businessName y EIN
+5. Selecciona tipo de ID y completa idNumber
+6. Sube un comprobante (imagen o PDF)
+7. Envía la transacción
+8. Verifica el mensaje de éxito
+
+### 3. Probar Panel Admin
 
 1. Abre `http://localhost:5174`
 2. Inicia sesión con credenciales de admin
 3. Verifica que puedas ver la lista de transacciones
 4. Selecciona una transacción para ver detalles
+5. Verifica que puedas ver los nuevos campos (roleType, idType, receiptUrl)
 
-### 3. Probar API con cURL
+### 4. Probar Panel Bank
+
+1. Crea un usuario bank usando el script `set-bank-claim`
+2. Inicia sesión con ese usuario en `http://localhost:5174`
+3. Navega a `/bank`
+4. Prueba los filtros (fecha, nombre, estado, monto)
+5. Verifica que puedas ver las transacciones filtradas
+6. Prueba el botón "Export CSV"
+7. Verifica que puedas abrir/descargar comprobantes
+
+### 5. Probar API con cURL
 
 #### Obtener Token de Firebase
 
@@ -464,6 +654,27 @@ Si usas custom claims, el usuario debe:
 2. Volver a iniciar sesión
 3. El nuevo token incluirá el custom claim
 
+### Tipos de Identificación
+
+Los tipos de ID disponibles son:
+- **State ID**: ID estatal de EE. UU.
+- **Passport**: Pasaporte
+- **Driver's License**: Licencia de conducir
+- **EIN**: Employer Identification Number (para empresas)
+- **Foreign ID**: Identificación extranjera
+
+### Roles de Usuario
+
+- **Individual**: Persona natural
+- **Business**: Persona jurídica (requiere businessName y EIN)
+
+### Subida de Comprobantes
+
+- Los comprobantes se suben a Firebase Storage antes de enviar la transacción
+- El tamaño máximo es 10 MB
+- Formatos soportados: JPEG, PNG, PDF
+- La URL del comprobante se guarda en el campo `receiptUrl` de la transacción
+
 ## 🐛 Troubleshooting
 
 ### Problemas de Instalación (Windows)
@@ -505,6 +716,19 @@ Verifica que el archivo `.env` en `api/` tenga todas las variables requeridas.
 2. Verifica que el UID esté en `ADMIN_UIDS`
 3. Asegúrate de que el usuario haya cerrado sesión y vuelto a iniciar sesión
 
+### Error: "Forbidden: Bank or Admin access required"
+
+1. Verifica que el usuario tenga el custom claim `bank: true` O `admin: true` O
+2. Verifica que el UID esté en `BANK_UIDS` o `ADMIN_UIDS`
+3. Asegúrate de que el usuario haya cerrado sesión y vuelto a iniciar sesión
+
+### Error al subir comprobante
+
+1. Verifica que Firebase Storage esté configurado correctamente
+2. Verifica que las reglas de Storage permitan la escritura
+3. Verifica que el archivo no exceda 10 MB
+4. Verifica que el formato sea JPEG, PNG o PDF
+
 ### Error: CORS
 
 Verifica que los orígenes de los clientes estén en la lista de CORS permitidos en `api/src/index.ts`.
@@ -516,10 +740,12 @@ Verifica que los orígenes de los clientes estén en la lista de CORS permitidos
 
 ## 📚 Tecnologías Utilizadas
 
-- **Frontend:** React 18, TypeScript, Vite, Tailwind CSS
+- **Frontend:** React 18, TypeScript, Vite, Tailwind CSS, React Router
 - **Backend:** Node.js, Express, TypeScript
 - **Database:** Firebase Firestore
+- **Storage:** Firebase Storage
 - **Authentication:** Firebase Authentication
+- **Internationalization:** react-i18next, i18next
 - **Validation:** express-validator
 - **Security:** Helmet, CORS, Rate Limiting
 

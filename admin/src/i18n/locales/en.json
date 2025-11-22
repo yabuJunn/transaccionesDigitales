@@ -1,0 +1,41 @@
+{
+  "common": {
+    "welcome": "Welcome to Globan Capital",
+    "description": "Globan Capital offers money transfer solutions that exceed expectations for speed, security, cost and effectiveness, removing geographic barriers in corporate finance.",
+    "iAmCustomer": "I am a customer",
+    "iAmManager": "I am a manager",
+    "iAmBank": "I am a bank",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
+  },
+  "bank": {
+    "title": "Bank Auditor Dashboard",
+    "filters": "Filters",
+    "dateFrom": "Date From",
+    "dateTo": "Date To",
+    "senderName": "Sender Name",
+    "receiverName": "Receiver Name",
+    "status": "Status",
+    "minAmount": "Min Amount",
+    "maxAmount": "Max Amount",
+    "applyFilters": "Apply Filters",
+    "clearFilters": "Clear Filters",
+    "exportCSV": "Export CSV",
+    "receipt": "Receipt",
+    "viewReceipt": "View Receipt",
+    "downloadReceipt": "Download Receipt",
+    "noTransactions": "No transactions found",
+    "date": "Date",
+    "invoiceNumber": "Invoice Number",
+    "sender": "Sender",
+    "receiver": "Receiver",
+    "amount": "Amount",
+    "fee": "Fee",
+    "paymentMode": "Payment Mode",
+    "status": "Status"
+  }
+}
+

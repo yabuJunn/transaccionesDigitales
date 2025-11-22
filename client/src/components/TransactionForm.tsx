@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import { TransactionInput, Person } from '../types';
 import { submitTransaction } from '../services/api';
+import { useTranslation } from 'react-i18next';
+// Firebase Storage imports are commented out - upload is temporarily disabled
+// import { getFirebaseStorage } from '../config/firebase';
+// import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 interface TransactionFormProps {
   onSuccess: (message: string) => void;
@@ -8,7 +12,11 @@ interface TransactionFormProps {
 }
 
 const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
+  const [uploadingReceipt, setUploadingReceipt] = useState(false);
+  const [receiptFile, setReceiptFile] = useState<File | null>(null);
+  const [receiptPreview, setReceiptPreview] = useState<string | null>(null);
   const [formData, setFormData] = useState<TransactionInput>({
     invoiceDate: '',
     invoiceNumber: '',
@@ -23,8 +31,11 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
       cityCode: '',
       stateCode: '',
       countryCode: '',
-      id1: { type: '', number: '' },
-      id2: { type: '', number: '' },
+      roleType: 'Individual',
+      idType: 'State ID',
+      idNumber: '',
+      businessName: '',
+      ein: '',
     },
     receiver: {
       fullName: '',
@@ -35,8 +46,11 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
       cityCode: '',
       stateCode: '',
       countryCode: '',
-      id1: { type: '', number: '' },
-      id2: { type: '', number: '' },
+      roleType: 'Individual',
+      idType: 'State ID',
+      idNumber: '',
+      businessName: '',
+      ein: '',
     },
     amountSent: '',
     fee: '',
@@ -44,7 +58,60 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
     correspondentId: '',
     bankName: '',
     accountNumber: '',
+    receiptUrl: '',
   });
+
+  const handleReceiptChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
+    if (!validTypes.includes(file.type)) {
+      onError(t('validation.invalidFileType'));
+      return;
+    }
+
+    // Validate file size (10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      onError(t('validation.fileTooLarge'));
+      return;
+    }
+
+    setReceiptFile(file);
+
+    // Create preview for images
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setReceiptPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setReceiptPreview(null);
+    }
+  };
+
+  const handleRemoveReceipt = () => {
+    setReceiptFile(null);
+    setReceiptPreview(null);
+    setFormData(prev => ({ ...prev, receiptUrl: '' }));
+  };
+
+  const uploadReceiptToStorage = async (): Promise<string | null> => {
+    // Firebase Storage upload is temporarily disabled
+    // The UI is kept for future implementation
+    // For now, we'll just return null and allow the form to submit without receiptUrl
+    if (!receiptFile) return null;
+
+    // TODO: Enable Firebase Storage upload when the plan is upgraded
+    // For now, we'll just store the file name locally for reference
+    console.log('Receipt file selected:', receiptFile.name, 'Size:', receiptFile.size);
+    
+    // Return null to indicate no URL was uploaded
+    // The form will still submit successfully without receiptUrl
+    return null;
+  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -53,48 +120,16 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
     
     if (name.startsWith('sender.')) {
       const field = name.replace('sender.', '');
-      
-      // Handle nested id fields (id1.type, id1.number, id2.type, id2.number)
-      if (field.startsWith('id1.') || field.startsWith('id2.')) {
-        const [idField, idProperty] = field.split('.');
-        setFormData((prev) => ({
-          ...prev,
-          sender: {
-            ...prev.sender,
-            [idField]: {
-              ...(prev.sender[idField as 'id1' | 'id2'] || { type: '', number: '' }),
-              [idProperty]: value,
-            },
-          },
-        }));
-      } else {
-        setFormData((prev) => ({
-          ...prev,
-          sender: { ...prev.sender, [field]: value },
-        }));
-      }
+      setFormData((prev) => ({
+        ...prev,
+        sender: { ...prev.sender, [field]: value },
+      }));
     } else if (name.startsWith('receiver.')) {
       const field = name.replace('receiver.', '');
-      
-      // Handle nested id fields (id1.type, id1.number, id2.type, id2.number)
-      if (field.startsWith('id1.') || field.startsWith('id2.')) {
-        const [idField, idProperty] = field.split('.');
-        setFormData((prev) => ({
-          ...prev,
-          receiver: {
-            ...prev.receiver,
-            [idField]: {
-              ...(prev.receiver[idField as 'id1' | 'id2'] || { type: '', number: '' }),
-              [idProperty]: value,
-            },
-          },
-        }));
-      } else {
-        setFormData((prev) => ({
-          ...prev,
-          receiver: { ...prev.receiver, [field]: value },
-        }));
-      }
+      setFormData((prev) => ({
+        ...prev,
+        receiver: { ...prev.receiver, [field]: value },
+      }));
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
@@ -105,27 +140,33 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
     setLoading(true);
 
     try {
-      // Clean up empty ID2 fields before submitting (ID1 is required)
-      const cleanedData = {
+      // Upload receipt if file is selected (currently disabled)
+      let receiptUrl = formData.receiptUrl;
+      if (receiptFile && !receiptUrl) {
+        // Try to upload (will return null for now)
+        const uploadedUrl = await uploadReceiptToStorage();
+        if (uploadedUrl) {
+          receiptUrl = uploadedUrl;
+        }
+        // Continue with form submission even if upload is disabled
+        // The receiptUrl will be undefined/null and the form will still submit
+      }
+
+      // Validate phone format (basic validation)
+      const phoneRegex = /^[\d\s\-\(\)]+$/;
+      if (!phoneRegex.test(formData.sender.phone1) || !phoneRegex.test(formData.receiver.phone1)) {
+        onError(t('validation.invalidPhone'));
+        setLoading(false);
+        return;
+      }
+
+      const cleanedData: TransactionInput = {
         ...formData,
-        sender: {
-          ...formData.sender,
-          id1: formData.sender.id1 || null,
-          id2: formData.sender.id2?.type && formData.sender.id2?.number 
-            ? formData.sender.id2 
-            : null,
-        },
-        receiver: {
-          ...formData.receiver,
-          id1: formData.receiver.id1 || null,
-          id2: formData.receiver.id2?.type && formData.receiver.id2?.number 
-            ? formData.receiver.id2 
-            : null,
-        },
+        receiptUrl: receiptUrl || undefined,
       };
       
       await submitTransaction(cleanedData);
-      onSuccess('Transacción enviada exitosamente');
+      onSuccess(t('form.transactionSent'));
       // Reset form
       setFormData({
         invoiceDate: '',
@@ -141,8 +182,11 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
           cityCode: '',
           stateCode: '',
           countryCode: '',
-          id1: { type: '', number: '' },
-          id2: { type: '', number: '' },
+          roleType: 'Individual',
+          idType: 'State ID',
+          idNumber: '',
+          businessName: '',
+          ein: '',
         },
         receiver: {
           fullName: '',
@@ -153,8 +197,11 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
           cityCode: '',
           stateCode: '',
           countryCode: '',
-          id1: { type: '', number: '' },
-          id2: { type: '', number: '' },
+          roleType: 'Individual',
+          idType: 'State ID',
+          idNumber: '',
+          businessName: '',
+          ein: '',
         },
         amountSent: '',
         fee: '',
@@ -162,12 +209,15 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
         correspondentId: '',
         bankName: '',
         accountNumber: '',
+        receiptUrl: '',
       });
+      setReceiptFile(null);
+      setReceiptPreview(null);
     } catch (err: any) {
       const errorMessage =
         err.response?.data?.error ||
         err.response?.data?.details?.[0]?.msg ||
-        'Error al enviar la transacción. Por favor, intente nuevamente.';
+        t('form.errorSending');
       onError(errorMessage);
     } finally {
       setLoading(false);
@@ -177,13 +227,13 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
   const renderPersonFields = (prefix: 'sender' | 'receiver', person: Person) => (
     <div className="space-y-4">
       <h3 className="text-xl font-semibold text-gray-800 capitalize">
-        {prefix === 'sender' ? 'Remitente' : 'Destinatario'}
+        {prefix === 'sender' ? t('form.sender') : t('form.receiver')}
       </h3>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Nombre Completo *
+            {t('form.fullName')} *
           </label>
           <input
             type="text"
@@ -197,7 +247,7 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Dirección *
+            {t('form.address')} *
           </label>
           <input
             type="text"
@@ -211,7 +261,7 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Teléfono 1 *
+            {t('form.phone1')} *
           </label>
           <input
             type="tel"
@@ -225,7 +275,7 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Teléfono 2
+            {t('form.phone2')}
           </label>
           <input
             type="tel"
@@ -238,7 +288,7 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Código Postal *
+            {t('form.zipCode')} *
           </label>
           <input
             type="text"
@@ -252,7 +302,7 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Ciudad *
+            {t('form.cityCode')} *
           </label>
           <input
             type="text"
@@ -266,7 +316,7 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Estado/Provincia *
+            {t('form.stateCode')} *
           </label>
           <input
             type="text"
@@ -280,7 +330,7 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            País *
+            {t('form.countryCode')} *
           </label>
           <input
             type="text"
@@ -293,70 +343,87 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
         </div>
       </div>
 
-      {/* ID Documents Section */}
+      {/* Role Type and ID Fields */}
       <div className="mt-6 space-y-4">
-        <h4 className="text-lg font-semibold text-gray-700">Documentos de Identificación</h4>
+        <h4 className="text-lg font-semibold text-gray-700">{t('form.idDocuments')}</h4>
         
-        {/* ID 1 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-md">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-blue-50 rounded-md">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Tipo de ID 1 *
+              {t('form.roleType')} *
+            </label>
+            <select
+              name={`${prefix}.roleType`}
+              value={person.roleType || 'Individual'}
+              onChange={handleChange}
+              required
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="Individual">{t('form.roleTypeIndividual')}</option>
+              <option value="Business">{t('form.roleTypeBusiness')}</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              {t('form.idType')} *
+            </label>
+            <select
+              name={`${prefix}.idType`}
+              value={person.idType || 'State ID'}
+              onChange={handleChange}
+              required
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="State ID">{t('form.idTypeStateId')}</option>
+              <option value="Passport">{t('form.idTypePassport')}</option>
+              <option value="Driver's License">{t('form.idTypeDriversLicense')}</option>
+              <option value="EIN">{t('form.idTypeEin')}</option>
+              <option value="Foreign ID">{t('form.idTypeForeignId')}</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              {t('form.idNumber')} *
             </label>
             <input
               type="text"
-              name={`${prefix}.id1.type`}
-              value={person.id1?.type || ''}
+              name={`${prefix}.idNumber`}
+              value={person.idNumber || ''}
               onChange={handleChange}
-              placeholder="Ej: FL Driver's licence"
               required
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Número de ID 1 *
-            </label>
-            <input
-              type="text"
-              name={`${prefix}.id1.number`}
-              value={person.id1?.number || ''}
-              onChange={handleChange}
-              placeholder="Ej: M123586402"
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-        </div>
-
-        {/* ID 2 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-md">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Tipo de ID 2
-            </label>
-            <input
-              type="text"
-              name={`${prefix}.id2.type`}
-              value={person.id2?.type || ''}
-              onChange={handleChange}
-              placeholder="Ej: Passport"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Número de ID 2
-            </label>
-            <input
-              type="text"
-              name={`${prefix}.id2.number`}
-              value={person.id2?.number || ''}
-              onChange={handleChange}
-              placeholder="Ej: 123456789"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+          {person.roleType === 'Business' && (
+            <>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {t('form.businessName')} *
+                </label>
+                <input
+                  type="text"
+                  name={`${prefix}.businessName`}
+                  value={person.businessName || ''}
+                  onChange={handleChange}
+                  required={person.roleType === 'Business'}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {t('form.ein')} *
+                </label>
+                <input
+                  type="text"
+                  name={`${prefix}.ein`}
+                  value={person.ein || ''}
+                  onChange={handleChange}
+                  required={person.roleType === 'Business'}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
@@ -366,12 +433,12 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
     <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md p-6 space-y-6">
       {/* Transaction Details */}
       <div className="space-y-4">
-        <h3 className="text-xl font-semibold text-gray-800">Detalles de la Transacción</h3>
+        <h3 className="text-xl font-semibold text-gray-800">{t('form.transactionDetails')}</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Fecha de Factura (d/M/yyyy) *
+              {t('form.invoiceDate')} *
             </label>
             <input
               type="text"
@@ -386,7 +453,7 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Número de Factura *
+              {t('form.invoiceNumber')} *
             </label>
             <input
               type="text"
@@ -400,7 +467,7 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Estado de Factura *
+              {t('form.invoiceStatus')} *
             </label>
             <select
               name="invoiceStatus"
@@ -417,7 +484,7 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Código del Transmisor *
+              {t('form.moneyTransmitterCode')} *
             </label>
             <input
               type="text"
@@ -431,7 +498,7 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Monto Enviado ($) *
+              {t('form.amountSent')} *
             </label>
             <input
               type="text"
@@ -446,7 +513,7 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Tarifa ($) *
+              {t('form.fee')} *
             </label>
             <input
               type="text"
@@ -461,7 +528,7 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Modo de Pago *
+              {t('form.paymentMode')} *
             </label>
             <input
               type="text"
@@ -475,7 +542,7 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              ID del Corresponsal *
+              {t('form.correspondentId')} *
             </label>
             <input
               type="text"
@@ -489,7 +556,7 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Nombre del Banco
+              {t('form.bankName')}
             </label>
             <input
               type="text"
@@ -502,7 +569,7 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Número de Cuenta *
+              {t('form.accountNumber')} *
             </label>
             <input
               type="text"
@@ -513,6 +580,51 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
+        </div>
+      </div>
+
+      {/* Receipt Upload */}
+      <div className="border-t pt-6">
+        <div className="p-4 bg-gray-50 rounded-md">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            {t('form.uploadReceipt')}
+          </label>
+          <div className="mb-2 p-2 bg-yellow-50 border border-yellow-200 rounded text-sm text-yellow-800">
+            ⚠️ Receipt upload is temporarily disabled. The file selection UI is available for future use.
+          </div>
+          <input
+            type="file"
+            accept="image/*,.pdf"
+            onChange={handleReceiptChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          {receiptPreview && (
+            <div className="mt-4">
+              <p className="text-sm font-medium text-gray-700 mb-2">{t('form.receiptPreview')}</p>
+              <div className="relative inline-block">
+                <img src={receiptPreview} alt="Receipt preview" className="max-w-xs max-h-48 rounded-md" />
+                <button
+                  type="button"
+                  onClick={handleRemoveReceipt}
+                  className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded text-sm hover:bg-red-600"
+                >
+                  {t('form.removeReceipt')}
+                </button>
+              </div>
+            </div>
+          )}
+          {receiptFile && !receiptPreview && (
+            <div className="mt-4 flex items-center justify-between p-2 bg-gray-100 rounded">
+              <span className="text-sm text-gray-700">{receiptFile.name} ({(receiptFile.size / 1024).toFixed(2)} KB)</span>
+              <button
+                type="button"
+                onClick={handleRemoveReceipt}
+                className="text-red-500 hover:text-red-700 text-sm"
+              >
+                {t('form.removeReceipt')}
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -533,7 +645,7 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
           disabled={loading}
           className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {loading ? 'Enviando...' : 'Enviar Transacción'}
+          {loading ? t('form.sending') : t('form.submitTransaction')}
         </button>
       </div>
     </form>
