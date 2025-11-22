@@ -1,11 +1,15 @@
+import { useTranslation } from 'react-i18next';
+
 interface SuccessMessageProps {
   message: string;
   onClose: () => void;
 }
 
 const SuccessMessage = ({ message, onClose }: SuccessMessageProps) => {
+  const { t } = useTranslation();
+
   return (
-    <div className="mb-6 bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-md flex items-center justify-between">
+    <div className="mb-6 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-800 dark:text-green-200 px-4 py-3 rounded-md flex items-center justify-between">
       <div className="flex items-center">
         <svg
           className="w-5 h-5 mr-2"
@@ -22,8 +26,8 @@ const SuccessMessage = ({ message, onClose }: SuccessMessageProps) => {
       </div>
       <button
         onClick={onClose}
-        className="text-green-800 hover:text-green-900 ml-4"
-        aria-label="Cerrar"
+        className="text-green-800 dark:text-green-200 hover:text-green-900 dark:hover:text-green-100 ml-4"
+        aria-label={t('common.close')}
       >
         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
           <path

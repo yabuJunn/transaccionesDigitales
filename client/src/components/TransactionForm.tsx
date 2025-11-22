@@ -226,13 +226,13 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
 
   const renderPersonFields = (prefix: 'sender' | 'receiver', person: Person) => (
     <div className="space-y-4">
-      <h3 className="text-xl font-semibold text-gray-800 capitalize">
+      <h3 className="text-xl font-semibold text-primary capitalize">
         {prefix === 'sender' ? t('form.sender') : t('form.receiver')}
       </h3>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-primary mb-1">
             {t('form.fullName')} *
           </label>
           <input
@@ -241,12 +241,12 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
             value={person.fullName}
             onChange={handleChange}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-neutral-border bg-neutral-bg rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-primary mb-1">
             {t('form.address')} *
           </label>
           <input
@@ -255,12 +255,12 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
             value={person.address}
             onChange={handleChange}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-neutral-border bg-neutral-bg rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-primary mb-1">
             {t('form.phone1')} *
           </label>
           <input
@@ -269,12 +269,12 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
             value={person.phone1}
             onChange={handleChange}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-neutral-border bg-neutral-bg rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-primary mb-1">
             {t('form.phone2')}
           </label>
           <input
@@ -282,12 +282,12 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
             name={`${prefix}.phone2`}
             value={person.phone2 || ''}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-neutral-border bg-neutral-bg rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-primary mb-1">
             {t('form.zipCode')} *
           </label>
           <input
@@ -296,12 +296,12 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
             value={person.zipCode}
             onChange={handleChange}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-neutral-border bg-neutral-bg rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-primary mb-1">
             {t('form.cityCode')} *
           </label>
           <input
@@ -310,12 +310,12 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
             value={person.cityCode}
             onChange={handleChange}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-neutral-border bg-neutral-bg rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-primary mb-1">
             {t('form.stateCode')} *
           </label>
           <input
@@ -324,12 +324,12 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
             value={person.stateCode}
             onChange={handleChange}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-neutral-border bg-neutral-bg rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-primary mb-1">
             {t('form.countryCode')} *
           </label>
           <input
@@ -338,18 +338,18 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
             value={person.countryCode}
             onChange={handleChange}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-neutral-border bg-neutral-bg rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
           />
         </div>
       </div>
 
       {/* Role Type and ID Fields */}
       <div className="mt-6 space-y-4">
-        <h4 className="text-lg font-semibold text-gray-700">{t('form.idDocuments')}</h4>
+        <h4 className="text-lg font-semibold text-primary">{t('form.idDocuments')}</h4>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-blue-50 rounded-md">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-secondary-300 dark:bg-secondary-600 bg-opacity-20 dark:bg-opacity-30 rounded-md">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-primary mb-1">
               {t('form.roleType')} *
             </label>
             <select
@@ -357,14 +357,14 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
               value={person.roleType || 'Individual'}
               onChange={handleChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-neutral-border bg-neutral-bg rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
             >
               <option value="Individual">{t('form.roleTypeIndividual')}</option>
               <option value="Business">{t('form.roleTypeBusiness')}</option>
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-primary mb-1">
               {t('form.idType')} *
             </label>
             <select
@@ -372,7 +372,7 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
               value={person.idType || 'State ID'}
               onChange={handleChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-neutral-border bg-neutral-bg rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
             >
               <option value="State ID">{t('form.idTypeStateId')}</option>
               <option value="Passport">{t('form.idTypePassport')}</option>
@@ -382,7 +382,7 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-primary mb-1">
               {t('form.idNumber')} *
             </label>
             <input
@@ -391,13 +391,13 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
               value={person.idNumber || ''}
               onChange={handleChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-neutral-border bg-neutral-bg rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
             />
           </div>
           {person.roleType === 'Business' && (
             <>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-primary mb-1">
                   {t('form.businessName')} *
                 </label>
                 <input
@@ -406,11 +406,11 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
                   value={person.businessName || ''}
                   onChange={handleChange}
                   required={person.roleType === 'Business'}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-neutral-border bg-neutral-bg rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-primary mb-1">
                   {t('form.ein')} *
                 </label>
                 <input
@@ -419,7 +419,7 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
                   value={person.ein || ''}
                   onChange={handleChange}
                   required={person.roleType === 'Business'}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-neutral-border bg-neutral-bg rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
                 />
               </div>
             </>
@@ -430,14 +430,14 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
   );
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md p-6 space-y-6">
+    <form onSubmit={handleSubmit} className="card-white p-6 space-y-6">
       {/* Transaction Details */}
       <div className="space-y-4">
-        <h3 className="text-xl font-semibold text-gray-800">{t('form.transactionDetails')}</h3>
+        <h3 className="text-xl font-semibold text-primary">{t('form.transactionDetails')}</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-primary mb-1">
               {t('form.invoiceDate')} *
             </label>
             <input
@@ -447,12 +447,12 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
               onChange={handleChange}
               placeholder="1/07/2025"
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-neutral-border bg-neutral-bg rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-primary mb-1">
               {t('form.invoiceNumber')} *
             </label>
             <input
@@ -461,12 +461,12 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
               value={formData.invoiceNumber}
               onChange={handleChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-neutral-border bg-neutral-bg rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-primary mb-1">
               {t('form.invoiceStatus')} *
             </label>
             <select
@@ -474,7 +474,7 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
               value={formData.invoiceStatus}
               onChange={handleChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-neutral-border bg-neutral-bg rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
             >
               <option value="PENDING">PENDING</option>
               <option value="PAID">PAID</option>
@@ -483,7 +483,7 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-primary mb-1">
               {t('form.moneyTransmitterCode')} *
             </label>
             <input
@@ -492,12 +492,12 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
               value={formData.moneyTransmitterCode}
               onChange={handleChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-neutral-border bg-neutral-bg rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-primary mb-1">
               {t('form.amountSent')} *
             </label>
             <input
@@ -507,12 +507,12 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
               onChange={handleChange}
               placeholder="$20,00"
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-neutral-border bg-neutral-bg rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-primary mb-1">
               {t('form.fee')} *
             </label>
             <input
@@ -522,12 +522,12 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
               onChange={handleChange}
               placeholder="$15,00"
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-neutral-border bg-neutral-bg rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-primary mb-1">
               {t('form.paymentMode')} *
             </label>
             <input
@@ -536,12 +536,12 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
               value={formData.paymentMode}
               onChange={handleChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-neutral-border bg-neutral-bg rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-primary mb-1">
               {t('form.correspondentId')} *
             </label>
             <input
@@ -550,12 +550,12 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
               value={formData.correspondentId}
               onChange={handleChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-neutral-border bg-neutral-bg rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-primary mb-1">
               {t('form.bankName')}
             </label>
             <input
@@ -563,12 +563,12 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
               name="bankName"
               value={formData.bankName}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-neutral-border bg-neutral-bg rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-primary mb-1">
               {t('form.accountNumber')} *
             </label>
             <input
@@ -577,7 +577,7 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
               value={formData.accountNumber}
               onChange={handleChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-neutral-border bg-neutral-bg rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
             />
           </div>
         </div>
@@ -585,22 +585,22 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
 
       {/* Receipt Upload */}
       <div className="border-t pt-6">
-        <div className="p-4 bg-gray-50 rounded-md">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+        <div className="p-4 bg-neutral-surface rounded-md">
+          <label className="block text-sm font-medium text-primary mb-2">
             {t('form.uploadReceipt')}
           </label>
-          <div className="mb-2 p-2 bg-yellow-50 border border-yellow-200 rounded text-sm text-yellow-800">
+          <div className="mb-2 p-2 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded text-sm text-yellow-800 dark:text-yellow-200">
             ⚠️ Receipt upload is temporarily disabled. The file selection UI is available for future use.
           </div>
           <input
             type="file"
             accept="image/*,.pdf"
             onChange={handleReceiptChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-neutral-border bg-neutral-bg rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
           />
           {receiptPreview && (
             <div className="mt-4">
-              <p className="text-sm font-medium text-gray-700 mb-2">{t('form.receiptPreview')}</p>
+              <p className="text-sm font-medium text-primary mb-2">{t('form.receiptPreview')}</p>
               <div className="relative inline-block">
                 <img src={receiptPreview} alt="Receipt preview" className="max-w-xs max-h-48 rounded-md" />
                 <button
@@ -614,8 +614,8 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
             </div>
           )}
           {receiptFile && !receiptPreview && (
-            <div className="mt-4 flex items-center justify-between p-2 bg-gray-100 rounded">
-              <span className="text-sm text-gray-700">{receiptFile.name} ({(receiptFile.size / 1024).toFixed(2)} KB)</span>
+            <div className="mt-4 flex items-center justify-between p-2 bg-neutral-surface-alt rounded">
+              <span className="text-sm text-neutral-text">{receiptFile.name} ({(receiptFile.size / 1024).toFixed(2)} KB)</span>
               <button
                 type="button"
                 onClick={handleRemoveReceipt}
@@ -643,7 +643,7 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
         <button
           type="submit"
           disabled={loading}
-          className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? t('form.sending') : t('form.submitTransaction')}
         </button>

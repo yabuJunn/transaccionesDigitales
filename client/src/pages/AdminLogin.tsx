@@ -2,6 +2,7 @@ import { useState, FormEvent } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import LoginForm from '../components/AdminLogin/LoginForm';
+import { useTranslation } from 'react-i18next';
 
 const AdminLogin = () => {
   const [email, setEmail] = useState('');
@@ -10,6 +11,7 @@ const AdminLogin = () => {
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -20,7 +22,7 @@ const AdminLogin = () => {
       await login(email, password);
       navigate('/admin/dashboard');
     } catch (err: any) {
-      setError(err.message || 'Error al iniciar sesión. Verifique sus credenciales.');
+      setError(err.message || t('admin.loginError'));
     } finally {
       setLoading(false);
     }

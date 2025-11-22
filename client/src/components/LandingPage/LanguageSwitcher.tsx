@@ -2,22 +2,39 @@ import { useTranslation } from 'react-i18next';
 
 const LanguageSwitcher = () => {
   const { i18n } = useTranslation();
+  const currentLang = i18n.language || 'en';
 
-  const toggleLanguage = () => {
-    const newLang = i18n.language === 'en' ? 'es' : 'en';
-    i18n.changeLanguage(newLang);
-    localStorage.setItem('language', newLang);
+  const changeLanguage = (lang: 'en' | 'es') => {
+    i18n.changeLanguage(lang);
+    localStorage.setItem('language', lang);
   };
 
   return (
-    <button
-      onClick={toggleLanguage}
-      className="px-4 py-2 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow text-gray-700 font-medium"
-    >
-      {i18n.language === 'en' ? '🇪🇸 ES' : '🇺🇸 EN'}
-    </button>
+    <div className="flex gap-2">
+      <button
+        onClick={() => changeLanguage('en')}
+        className={`px-4 py-2 rounded-lg font-medium transition-all ${
+          currentLang === 'en'
+            ? 'bg-primary text-white shadow-md hover:bg-primary-600'
+            : 'bg-neutral-bg text-neutral-text border border-neutral-border shadow-md hover:shadow-lg'
+        }`}
+        style={currentLang === 'en' ? { backgroundColor: 'var(--color-primary)', color: '#ffffff' } : undefined}
+      >
+        🇺🇸 English
+      </button>
+      <button
+        onClick={() => changeLanguage('es')}
+        className={`px-4 py-2 rounded-lg font-medium transition-all ${
+          currentLang === 'es'
+            ? 'bg-primary text-white shadow-md hover:bg-primary-600'
+            : 'bg-neutral-bg text-neutral-text border border-neutral-border shadow-md hover:shadow-lg'
+        }`}
+        style={currentLang === 'es' ? { backgroundColor: 'var(--color-primary)', color: '#ffffff' } : undefined}
+      >
+        🇪🇸 Español
+      </button>
+    </div>
   );
 };
 
 export default LanguageSwitcher;
-

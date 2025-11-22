@@ -1,6 +1,8 @@
 import { Transaction } from '../../types';
 import LanguageSwitcher from '../LandingPage/LanguageSwitcher';
+import ThemeToggle from '../ThemeToggle';
 import { TFunction } from 'i18next';
+import { useTranslation } from 'react-i18next';
 
 interface BankFilters {
   from?: string;
@@ -41,94 +43,105 @@ const BankDashboardContent = ({
   onExportCSV,
   onPageChange,
 }: BankDashboardContentProps) => {
+  const { i18n } = useTranslation();
+
   const formatAmount = (cents: number) => {
     return `$${(cents / 100).toFixed(2)}`;
   };
 
   const formatDate = (date: any) => {
     if (!date) return '';
+    const locale = i18n.language === 'es' ? 'es-ES' : 'en-US';
     if (date.seconds) {
-      return new Date(date.seconds * 1000).toLocaleDateString();
+      return new Date(date.seconds * 1000).toLocaleDateString(locale);
     }
     if (date instanceof Date) {
-      return date.toLocaleDateString();
+      return date.toLocaleDateString(locale);
     }
     return String(date);
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-neutral-surface">
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center space-x-4">
-            <h1 className="text-3xl font-bold text-gray-900">{t('bank.title')}</h1>
+            <img 
+              src="/assets/favicon.png" 
+              alt="Globan Capital logo" 
+              className="h-10"
+            />
+            <h1 className="text-3xl font-bold text-primary">{t('bank.title')}</h1>
             <a
               href="/"
-              className="text-sm text-blue-600 hover:text-blue-800"
+              className="link-accent text-sm"
             >
-              ← Volver al inicio
+              {t('bank.backToHome')}
             </a>
           </div>
-          <LanguageSwitcher />
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            <LanguageSwitcher />
+          </div>
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div className="card-white p-6 mb-6">
           <h2 className="text-xl font-semibold mb-4">{t('bank.filters')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-primary mb-1">
                 {t('bank.dateFrom')}
               </label>
               <input
                 type="date"
                 value={filters.from || ''}
                 onChange={(e) => onFilterChange('from', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                className="w-full px-3 py-2 border border-neutral-border bg-neutral-bg text-neutral-text rounded-md"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-primary mb-1">
                 {t('bank.dateTo')}
               </label>
               <input
                 type="date"
                 value={filters.to || ''}
                 onChange={(e) => onFilterChange('to', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                className="w-full px-3 py-2 border border-neutral-border bg-neutral-bg text-neutral-text rounded-md"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-primary mb-1">
                 {t('bank.senderName')}
               </label>
               <input
                 type="text"
                 value={filters.senderName || ''}
                 onChange={(e) => onFilterChange('senderName', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                className="w-full px-3 py-2 border border-neutral-border bg-neutral-bg text-neutral-text rounded-md"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-primary mb-1">
                 {t('bank.receiverName')}
               </label>
               <input
                 type="text"
                 value={filters.receiverName || ''}
                 onChange={(e) => onFilterChange('receiverName', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                className="w-full px-3 py-2 border border-neutral-border bg-neutral-bg text-neutral-text rounded-md"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-primary mb-1">
                 {t('bank.status')}
               </label>
               <select
                 value={filters.status || ''}
                 onChange={(e) => onFilterChange('status', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                className="w-full px-3 py-2 border border-neutral-border bg-neutral-bg text-neutral-text rounded-md"
               >
                 <option value="">All</option>
                 <option value="PENDING">PENDING</option>
@@ -137,7 +150,7 @@ const BankDashboardContent = ({
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-primary mb-1">
                 {t('bank.minAmount')}
               </label>
               <input
@@ -145,11 +158,11 @@ const BankDashboardContent = ({
                 step="0.01"
                 value={filters.minAmount || ''}
                 onChange={(e) => onFilterChange('minAmount', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                className="w-full px-3 py-2 border border-neutral-border bg-neutral-bg text-neutral-text rounded-md"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-primary mb-1">
                 {t('bank.maxAmount')}
               </label>
               <input
@@ -157,26 +170,26 @@ const BankDashboardContent = ({
                 step="0.01"
                 value={filters.maxAmount || ''}
                 onChange={(e) => onFilterChange('maxAmount', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                className="w-full px-3 py-2 border border-neutral-border bg-neutral-bg text-neutral-text rounded-md"
               />
             </div>
           </div>
           <div className="flex gap-4 mt-4">
             <button
               onClick={onApplyFilters}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              className="btn-primary"
             >
               {t('bank.applyFilters')}
             </button>
             <button
               onClick={onClearFilters}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+              className="px-4 py-2 bg-neutral-surface-alt text-neutral-text rounded-md hover:bg-neutral-surface transition-colors"
             >
               {t('bank.clearFilters')}
             </button>
             <button
               onClick={onExportCSV}
-              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+              className="btn-secondary"
             >
               {t('bank.exportCSV')}
             </button>
@@ -184,68 +197,68 @@ const BankDashboardContent = ({
         </div>
 
         {/* Transactions Table */}
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+        <div className="card-white overflow-hidden">
           {loading ? (
             <div className="p-8 text-center">{t('common.loading')}</div>
           ) : transactions.length === 0 ? (
-            <div className="p-8 text-center text-gray-500">{t('bank.noTransactions')}</div>
+            <div className="p-8 text-center text-neutral-muted">{t('bank.noTransactions')}</div>
           ) : (
             <>
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                <table className="min-w-full divide-y divide-neutral-border">
+                  <thead className="bg-neutral-surface-alt">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-neutral-muted uppercase tracking-wider">
                         {t('bank.date')}
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-neutral-muted uppercase tracking-wider">
                         {t('bank.invoiceNumber')}
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-neutral-muted uppercase tracking-wider">
                         {t('bank.sender')}
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-neutral-muted uppercase tracking-wider">
                         {t('bank.receiver')}
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-neutral-muted uppercase tracking-wider">
                         {t('bank.amount')}
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-neutral-muted uppercase tracking-wider">
                         {t('bank.fee')}
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-neutral-muted uppercase tracking-wider">
                         {t('bank.paymentMode')}
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-neutral-muted uppercase tracking-wider">
                         {t('bank.status')}
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-neutral-muted uppercase tracking-wider">
                         {t('bank.receipt')}
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody className="bg-neutral-bg divide-y divide-neutral-border">
                     {transactions.map((transaction) => (
-                      <tr key={transaction.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <tr key={transaction.id} className="hover:bg-neutral-surface-alt transition-colors">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-text">
                           {formatDate(transaction.invoiceDate)}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-text">
                           {transaction.invoiceNumber}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-text">
                           {transaction.sender?.fullName}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-text">
                           {transaction.receiver?.fullName}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-text">
                           {formatAmount(transaction.amountSent)}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-text">
                           {formatAmount(transaction.fee)}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-text">
                           {transaction.paymentMode}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -267,12 +280,12 @@ const BankDashboardContent = ({
                               href={transaction.receiptUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-blue-600 hover:text-blue-800"
+                              className="link-accent"
                             >
                               {t('bank.viewReceipt')}
                             </a>
                           ) : (
-                            <span className="text-gray-400">-</span>
+                            <span className="text-neutral-muted-2">-</span>
                           )}
                         </td>
                       </tr>
@@ -282,22 +295,26 @@ const BankDashboardContent = ({
               </div>
               {/* Pagination */}
               {pagination.totalPages > 1 && (
-                <div className="bg-gray-50 px-4 py-3 flex items-center justify-between border-t border-gray-200">
-                  <div className="text-sm text-gray-700">
-                    Showing {((page - 1) * pagination.limit) + 1} to {Math.min(page * pagination.limit, pagination.total)} of {pagination.total} results
+                <div className="bg-neutral-surface-alt px-4 py-3 flex items-center justify-between border-t border-neutral-border">
+                  <div className="text-sm text-neutral-text">
+                    {t('bank.showingResults', {
+                      from: ((page - 1) * pagination.limit) + 1,
+                      to: Math.min(page * pagination.limit, pagination.total),
+                      total: pagination.total
+                    })}
                   </div>
                   <div className="flex gap-2">
                     <button
                       onClick={() => onPageChange(Math.max(1, page - 1))}
                       disabled={page === 1}
-                      className="px-3 py-1 border border-gray-300 rounded-md disabled:opacity-50"
+                      className="px-3 py-1 border border-neutral-border rounded-md disabled:opacity-50 hover:bg-neutral-surface transition-colors"
                     >
                       Previous
                     </button>
                     <button
                       onClick={() => onPageChange(Math.min(totalPages, page + 1))}
                       disabled={page === totalPages}
-                      className="px-3 py-1 border border-gray-300 rounded-md disabled:opacity-50"
+                      className="px-3 py-1 border border-neutral-border rounded-md disabled:opacity-50 hover:bg-neutral-surface transition-colors"
                     >
                       Next
                     </button>

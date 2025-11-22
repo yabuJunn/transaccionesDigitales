@@ -1,11 +1,15 @@
+import { useTranslation } from 'react-i18next';
+
 interface ErrorMessageProps {
   message: string;
   onClose: () => void;
 }
 
 const ErrorMessage = ({ message, onClose }: ErrorMessageProps) => {
+  const { t } = useTranslation();
+
   return (
-    <div className="mb-6 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-md flex items-center justify-between">
+    <div className="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200 px-4 py-3 rounded-md flex items-center justify-between">
       <div className="flex items-center">
         <svg
           className="w-5 h-5 mr-2"
@@ -22,8 +26,8 @@ const ErrorMessage = ({ message, onClose }: ErrorMessageProps) => {
       </div>
       <button
         onClick={onClose}
-        className="text-red-800 hover:text-red-900 ml-4"
-        aria-label="Cerrar"
+        className="text-red-800 dark:text-red-200 hover:text-red-900 dark:hover:text-red-100 ml-4"
+        aria-label={t('common.close')}
       >
         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
           <path

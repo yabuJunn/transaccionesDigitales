@@ -1,0 +1,214 @@
+:root {
+  /* Primary colors - Olive green dark */
+  --color-primary: #63651c;
+  --color-primary-600: #4f4f16;
+  --color-primary-400: #7a7b27;
+  --color-primary-300: #8a8b3a;
+  --color-primary-200: #a5a65c;
+
+  /* Secondary colors - Olive green light / muted gold */
+  --color-secondary: #999a6e;
+  --color-secondary-600: #80805a;
+  --color-secondary-300: #bdbd90;
+  --color-secondary-200: #d4d5b0;
+
+  /* Neutral colors - Light mode */
+  --color-bg: #ffffff;
+  --color-surface: #f7f7f5;
+  --color-surface-alt: #e8e8e0;
+  --color-text: #111827;
+  --color-text-secondary: #374151;
+  --color-muted: #6b6b6b;
+  --color-muted-2: #9aa0a0;
+  --color-border: #e5e7eb;
+}
+
+[data-theme="dark"] {
+  /* Primary colors remain the same in dark mode */
+  --color-primary: #8a8b3a;
+  --color-primary-600: #63651c;
+  --color-primary-400: #a5a65c;
+
+  /* Secondary colors */
+  --color-secondary: #bdbd90;
+  --color-secondary-600: #999a6e;
+  --color-secondary-300: #d4d5b0;
+
+  /* Neutral colors - Dark mode */
+  --color-bg: #1a1a1a;
+  --color-surface: #2a2a2a;
+  --color-surface-alt: #3a3a3a;
+  --color-text: #f7f7f5;
+  --color-text-secondary: #d1d5db;
+  --color-muted: #9ca3af;
+  --color-muted-2: #6b7280;
+  --color-border: #374151;
+}
+
+/* Tailwind base + custom utilities / overrides */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+      sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+  }
+  
+  /* Input, textarea, select and option elements - adapt to dark mode */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="date"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="file"],
+  textarea,
+  select {
+    background-color: var(--color-bg) !important;
+    color: var(--color-text) !important;
+  }
+  
+  option {
+    background-color: var(--color-bg) !important;
+    color: var(--color-text) !important;
+  }
+  
+  [data-theme="dark"] input[type="text"],
+  [data-theme="dark"] input[type="email"],
+  [data-theme="dark"] input[type="password"],
+  [data-theme="dark"] input[type="number"],
+  [data-theme="dark"] input[type="date"],
+  [data-theme="dark"] input[type="tel"],
+  [data-theme="dark"] input[type="url"],
+  [data-theme="dark"] input[type="file"],
+  [data-theme="dark"] textarea,
+  [data-theme="dark"] select {
+    background-color: var(--color-surface) !important;
+    color: var(--color-text) !important;
+  }
+  
+  [data-theme="dark"] option {
+    background-color: var(--color-surface) !important;
+    color: var(--color-text) !important;
+  }
+}
+
+@layer components {
+  /* Primary button - Corporate CTA */
+  .btn-primary {
+    background-color: var(--color-primary);
+    color: white;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    transition: background-color 200ms;
+  }
+  .btn-primary:hover {
+    background-color: var(--color-primary-600);
+  }
+
+  /* Secondary button */
+  .btn-secondary {
+    background-color: var(--color-secondary);
+    color: white;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    transition: background-color 200ms;
+  }
+  .btn-secondary:hover {
+    background-color: var(--color-secondary-600);
+  }
+
+  /* Accent button for important actions - using primary-400 for contrast */
+  .btn-accent {
+    background-color: var(--color-primary-400);
+    color: white;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    transition: background-color 200ms;
+  }
+  .btn-accent:hover {
+    background-color: var(--color-primary);
+  }
+
+  /* Card surface with subtle shadow */
+  .card-surface {
+    background: var(--color-surface);
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.04);
+  }
+
+  /* Card with white background - adapts to dark mode */
+  .card-white {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+  
+  [data-theme="dark"] .card-white {
+    background-color: var(--color-surface);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Link with primary color */
+  .link-accent {
+    color: var(--color-primary);
+    transition: color 200ms;
+  }
+  .link-accent:hover {
+    color: var(--color-primary-600);
+    text-decoration: underline;
+  }
+  
+  [data-theme="dark"] .link-accent {
+    color: var(--color-primary-300);
+  }
+  [data-theme="dark"] .link-accent:hover {
+    color: var(--color-primary-400);
+  }
+
+  /* Text muted */
+  .text-muted {
+    color: var(--color-muted);
+  }
+
+  /* Header with border */
+  .header-border {
+    background-color: var(--color-bg);
+    border-bottom: 1px solid var(--color-border);
+  }
+  
+  /* Dark card */
+  .card-dark {
+    background-color: var(--color-surface-alt);
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+}
+
+/* Dark mode support (optional - scaffold) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Dark mode variables can be added here if needed */
+    /* --color-bg: #1a1a1a; */
+    /* --color-surface: #2a2a2a; */
+    /* --color-text: #f7f7f5; */
+  }
+}
+

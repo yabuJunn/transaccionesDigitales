@@ -7,10 +7,12 @@ import TransactionDetails from '../components/AdminDashboard/TransactionDetails'
 import DashboardHeader from '../components/AdminDashboard/DashboardHeader';
 import DashboardFilters from '../components/AdminDashboard/DashboardFilters';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const AdminDashboard = () => {
   const { user, logout, getIdToken } = useAuth();
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [loading, setLoading] = useState(true);
@@ -30,7 +32,7 @@ const AdminDashboard = () => {
       setError('');
       const token = await getIdToken();
       if (!token) {
-        setError('No se pudo obtener el token de autenticación');
+        setError(t('admin.errorLoadingTransactions'));
         return;
       }
 
@@ -44,7 +46,7 @@ const AdminDashboard = () => {
       setTransactions(response.data);
       setPagination(response.pagination);
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Error al cargar las transacciones');
+      setError(err.response?.data?.error || t('admin.errorLoadingTransactions'));
     } finally {
       setLoading(false);
     }
@@ -62,7 +64,8 @@ const AdminDashboard = () => {
 
   const formatDate = (date: string | { seconds: number; nanoseconds: number }): string => {
     if (typeof date === 'string') return date;
-    return new Date(date.seconds * 1000).toLocaleDateString('es-ES');
+    const locale = i18n.language === 'es' ? 'es-ES' : 'en-US';
+    return new Date(date.seconds * 1000).toLocaleDateString(locale);
   };
 
   const formatAmount = (cents: number): string => {
@@ -70,12 +73,12 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-neutral-surface">
       <DashboardHeader user={user} onLogout={handleLogout} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {error && (
-          <div className="mb-6 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-md">
+          <div className="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200 px-4 py-3 rounded-md">
             {error}
           </div>
         )}
@@ -112,8 +115,8 @@ const AdminDashboard = () => {
                 formatAmount={formatAmount}
               />
             ) : (
-              <div className="bg-white rounded-lg shadow p-6 text-center text-gray-500">
-                Seleccione una transacción para ver los detalles
+              <div className="card-white p-6 text-center text-neutral-muted">
+                {t('admin.selectTransaction')}
               </div>
             )}
           </div>
