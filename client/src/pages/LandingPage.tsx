@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import LanguageSwitcher from './LanguageSwitcher';
+import LanguageSwitcher from '../components/LandingPage/LanguageSwitcher';
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -37,7 +37,7 @@ const LandingPage = () => {
 
             {/* Manager Card */}
             <button
-              onClick={() => navigate('/admin')}
+              onClick={() => navigate('/admin/login')}
               className="bg-green-600 hover:bg-green-700 text-white rounded-lg p-8 shadow-lg transition-all duration-200 transform hover:scale-105"
             >
               <div className="text-4xl mb-4">👔</div>
@@ -47,7 +47,7 @@ const LandingPage = () => {
 
             {/* Bank Card */}
             <button
-              onClick={() => navigate('/bank')}
+              onClick={() => navigate('/admin/bank')}
               className="bg-purple-600 hover:bg-purple-700 text-white rounded-lg p-8 shadow-lg transition-all duration-200 transform hover:scale-105"
             >
               <div className="text-4xl mb-4">🏦</div>

@@ -67,6 +67,31 @@
     "invalidAmount": "Formato de monto inválido",
     "fileTooLarge": "El tamaño del archivo debe ser menor a 10MB",
     "invalidFileType": "El archivo debe ser una imagen o PDF"
+  },
+  "bank": {
+    "title": "Panel de Auditoría Bancaria",
+    "filters": "Filtros",
+    "dateFrom": "Fecha Desde",
+    "dateTo": "Fecha Hasta",
+    "senderName": "Nombre del Remitente",
+    "receiverName": "Nombre del Receptor",
+    "status": "Estado",
+    "minAmount": "Monto Mínimo",
+    "maxAmount": "Monto Máximo",
+    "applyFilters": "Aplicar Filtros",
+    "clearFilters": "Limpiar Filtros",
+    "exportCSV": "Exportar CSV",
+    "receipt": "Comprobante",
+    "viewReceipt": "Ver Comprobante",
+    "downloadReceipt": "Descargar Comprobante",
+    "noTransactions": "No se encontraron transacciones",
+    "date": "Fecha",
+    "invoiceNumber": "Número de Factura",
+    "sender": "Remitente",
+    "receiver": "Receptor",
+    "amount": "Monto",
+    "fee": "Tarifa",
+    "paymentMode": "Modo de Pago"
   }
 }
 

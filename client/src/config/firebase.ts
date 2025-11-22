@@ -102,6 +102,9 @@ export const getApp = () => initializeFirebase();
 export const getAuthInstance = () => getFirebaseAuth();
 export const getStorageInstance = () => getFirebaseStorage();
 
+// Note: getAuth is already exported above as an alias for getFirebaseAuth
+// Use getFirebaseAuth() or getAuth() to access Firebase Auth instance
+
 // Default export
 export default initializeFirebase();
 

@@ -6,11 +6,12 @@ Sistema completo de transacciones virtuales con formulario público, panel de ad
 
 ```
 virtual-transactions/
-├── client/          # Cliente público (formulario de transacciones)
-├── admin/           # Panel de administración (dashboard protegido)
+├── client/          # Aplicación unificada (formulario público + dashboard admin)
 ├── api/             # API Express con TypeScript
 └── package.json     # Configuración del monorepo
 ```
+
+**Nota:** La aplicación está unificada en `client/`. El dashboard de administración está disponible en las rutas `/admin/*` dentro de la misma aplicación.
 
 ## 🚀 Inicio Rápido
 
@@ -48,7 +49,6 @@ npm install --ignore-scripts
 # Instalar individualmente en cada proyecto
 cd api && npm install --ignore-scripts && cd ..
 cd client && npm install --ignore-scripts && cd ..
-cd admin && npm install --ignore-scripts && cd ..
 ```
 
 **Nota:** 
@@ -105,22 +105,7 @@ BANK_UIDS=uid1,uid2,uid3
 
 #### 2.3. Configurar Variables de Entorno para Frontend
 
-Crea archivos `.env.local` en `client/` y `admin/`:
-
-**client/.env.local:**
-```bash
-VITE_API_URL=http://localhost:4000
-```
-
-**admin/.env.local:**
-```bash
-VITE_API_URL=http://localhost:4000
-VITE_FIREBASE_API_KEY=tu-api-key
-VITE_FIREBASE_AUTH_DOMAIN=tu-project.firebaseapp.com
-VITE_FIREBASE_DATABASE_URL=https://tu-project-default-rtdb.firebaseio.com
-VITE_FIREBASE_PROJECT_ID=tu-project-id
-VITE_FIREBASE_STORAGE_BUCKET=tu-project.appspot.com
-```
+Crea un archivo `.env.local` en `client/`:
 
 **client/.env.local:**
 ```bash
@@ -228,11 +213,8 @@ npm run dev
 #### Desarrollo (individual)
 
 ```bash
-# Cliente público (puerto 5173)
+# Aplicación unificada (puerto 5173) - incluye cliente público y dashboard admin
 npm run dev:client
-
-# Panel admin (puerto 5174)
-npm run dev:admin
 
 # API (puerto 4000)
 npm run dev:api
@@ -253,9 +235,8 @@ Esto cargará las transacciones de ejemplo desde `api/data/transactions-sample.j
 
 ### Desde la raíz:
 
-- `npm run dev` - Ejecuta todos los servicios en modo desarrollo
-- `npm run dev:client` - Solo cliente público
-- `npm run dev:admin` - Solo panel admin
+- `npm run dev` - Ejecuta todos los servicios en modo desarrollo (client + api)
+- `npm run dev:client` - Solo aplicación unificada (incluye cliente público y dashboard admin)
 - `npm run dev:api` - Solo API
 - `npm run build` - Construye todos los proyectos para producción
 - `npm run test` - Ejecuta tests
@@ -552,7 +533,7 @@ Cuando `export=csv`, devuelve un archivo CSV con las transacciones filtradas.
 
 ### 3. Probar Panel Admin
 
-1. Abre `http://localhost:5174`
+1. Abre `http://localhost:5173/admin/login`
 2. Inicia sesión con credenciales de admin
 3. Verifica que puedas ver la lista de transacciones
 4. Selecciona una transacción para ver detalles
@@ -561,8 +542,8 @@ Cuando `export=csv`, devuelve un archivo CSV con las transacciones filtradas.
 ### 4. Probar Panel Bank
 
 1. Crea un usuario bank usando el script `set-bank-claim`
-2. Inicia sesión con ese usuario en `http://localhost:5174`
-3. Navega a `/bank`
+2. Inicia sesión con ese usuario en `http://localhost:5173/admin/login`
+3. Navega a `/admin/bank`
 4. Prueba los filtros (fecha, nombre, estado, monto)
 5. Verifica que puedas ver las transacciones filtradas
 6. Prueba el botón "Export CSV"
