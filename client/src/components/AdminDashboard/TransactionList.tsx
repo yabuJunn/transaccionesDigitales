@@ -1,4 +1,4 @@
-import { Transaction, TransactionsResponse } from '../../types';
+import { Transaction } from '../../types';
 import { useTranslation } from 'react-i18next';
 
 interface TransactionListProps {

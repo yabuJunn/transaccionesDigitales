@@ -4,9 +4,9 @@
   "description": "Express API server for virtual transactions",
   "main": "dist/index.js",
   "scripts": {
-    "dev": "npx tsx watch src/index.ts",
+    "dev": "npx tsx watch src/server.ts",
     "build": "npx tsc",
-    "start": "node dist/index.js",
+    "start": "node dist/server.js",
     "test": "npx jest",
     "test:watch": "npx jest --watch",
     "seed": "npx tsx scripts/seed-from-csv.ts",

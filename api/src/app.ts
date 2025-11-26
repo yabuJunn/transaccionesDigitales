@@ -1,30 +1,12 @@
-/**
- * @deprecated Este archivo está deprecado.
- * 
- * La aplicación Express ahora está separada en:
- * - api/src/app.ts: Exporta la instancia de Express (sin listen)
- * - api/src/server.ts: Servidor para desarrollo local (con listen)
- * 
- * Para desarrollo local, usa: npm run dev --workspace=api
- * Para Cloud Functions, functions/src/index.ts importa app.ts
- * 
- * Este archivo se mantiene temporalmente para compatibilidad,
- * pero será eliminado en una versión futura.
- */
-
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
-import * as dotenv from 'dotenv';
 import transactionsRouter from './routes/transactions';
 import bankRouter from './routes/bank';
 import './config/firebase'; // Initialize Firebase
 
-dotenv.config();
-
 const app = express();
-const PORT = process.env.PORT || 4000;
 
 // Security middlewares
 app.use(helmet());
@@ -34,6 +16,7 @@ const allowedOrigins = [
   'http://localhost:5173', // Vite default
   'http://localhost:5174', // Alternative Vite port
   'http://localhost:3000',
+  'http://localhost:5000', // Firebase Hosting emulator
   process.env.CLIENT_URL,
   process.env.ADMIN_URL,
 ].filter(Boolean) as string[];
@@ -43,6 +26,11 @@ app.use(
     origin: (origin, callback) => {
       // Allow requests with no origin (mobile apps, Postman, etc.)
       if (!origin) return callback(null, true);
+      
+      // In Cloud Functions, allow requests from Firebase Hosting
+      if (process.env.FUNCTIONS_EMULATOR || process.env.K_SERVICE) {
+        return callback(null, true);
+      }
       
       if (allowedOrigins.includes(origin) || process.env.NODE_ENV === 'development') {
         callback(null, true);
@@ -90,8 +78,5 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 API server running on http://localhost:${PORT}`);
-  console.log(`📊 Health check: http://localhost:${PORT}/health`);
-});
+export default app;
 

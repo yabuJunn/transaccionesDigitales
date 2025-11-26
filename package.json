@@ -6,18 +6,26 @@
   "workspaces": [
     "client",
     "admin",
-    "api"
+    "api",
+    "functions"
   ],
   "scripts": {
     "dev:client": "npm run dev --workspace=client",
     "dev:api": "npm run dev --workspace=api",
     "dev": "npm-run-all --parallel dev:client dev:api",
-    "build": "npm run build --workspace=client && npm run build --workspace=api",
+    "build": "npm run build --workspace=client && npm run build --workspace=api && npm run build --workspace=functions",
     "build:client": "npm run build --workspace=client",
     "build:api": "npm run build --workspace=api",
+    "build:functions": "npm run build --workspace=api && npm run build --workspace=functions",
+    "deploy": "firebase deploy",
+    "deploy:hosting": "npm run build:client && firebase deploy --only hosting",
+    "deploy:functions": "npm run build:functions && firebase deploy --only functions",
+    "emulators:start": "firebase emulators:start --only hosting,functions,firestore,auth",
+    "emulators:start:all": "firebase emulators:start",
     "test": "npm run test --workspaces",
     "lint": "npm run lint --workspaces",
-    "seed": "npm run seed --workspace=api"
+    "seed": "npm run seed --workspace=api",
+    "set-claim": "npx tsx scripts/setCustomClaims.ts"
   },
   "devDependencies": {
     "npm-run-all": "^4.1.5"

@@ -4,7 +4,6 @@ import { useAuth } from '../context/AuthContext';
 import { getBankTransactions, exportBankTransactionsCSV } from '../services/api';
 import { Transaction } from '../types';
 import BankDashboardContent from '../components/AdminDashboard/BankDashboardContent';
-import { useNavigate } from 'react-router-dom';
 
 interface BankFilters {
   from?: string;
@@ -19,7 +18,6 @@ interface BankFilters {
 const AdminBankDashboard = () => {
   const { t } = useTranslation();
   const { user, getIdToken } = useAuth();
-  const navigate = useNavigate();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState<BankFilters>({});

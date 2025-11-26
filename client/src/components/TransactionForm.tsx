@@ -14,7 +14,6 @@ interface TransactionFormProps {
 const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
-  const [uploadingReceipt, setUploadingReceipt] = useState(false);
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
   const [receiptPreview, setReceiptPreview] = useState<string | null>(null);
   const [formData, setFormData] = useState<TransactionInput>({

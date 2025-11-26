@@ -1,7 +1,26 @@
 import axios from 'axios';
 import { TransactionInput, TransactionsResponse, Transaction } from '../types';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+// In production (Firebase Hosting), use relative path /api (handled by rewrite)
+// In development, use VITE_API_URL or default to localhost:4000
+// In emulator, use the emulator URL
+const getApiBaseUrl = (): string => {
+  // If VITE_API_URL is explicitly set, use it
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  
+  // In production (deployed to Firebase Hosting), use relative path
+  // Firebase Hosting rewrite will forward /api/** to the Cloud Function
+  if (import.meta.env.PROD) {
+    return '/api';
+  }
+  
+  // In development, default to local Express server
+  return 'http://localhost:4000';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 const api = axios.create({
   baseURL: API_BASE_URL,
