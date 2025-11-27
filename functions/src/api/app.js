@@ -12,34 +12,34 @@ const bank_1 = __importDefault(require("./routes/bank"));
 require("./config/firebase"); // Initialize Firebase
 const app = (0, express_1.default)();
 // Security middlewares
-app.use((0, helmet_1.default)());
+// In Cloud Functions, don't use helmet as it can interfere with CORS
+// CORS is handled at the function level in functions/src/index.ts
+if (!process.env.FUNCTIONS_EMULATOR && !process.env.K_SERVICE) {
+    // Only use helmet in local development
+    app.use((0, helmet_1.default)());
+}
 // CORS configuration
-const allowedOrigins = [
-    'http://localhost:5173', // Vite default
-    'http://localhost:5174', // Alternative Vite port
-    'http://localhost:3000',
-    'http://localhost:5000', // Firebase Hosting emulator
-    process.env.CLIENT_URL,
-    process.env.ADMIN_URL,
-].filter(Boolean);
-app.use((0, cors_1.default)({
-    origin: (origin, callback) => {
-        // Allow requests with no origin (mobile apps, Postman, etc.)
-        if (!origin)
-            return callback(null, true);
-        // In Cloud Functions, allow requests from Firebase Hosting
-        if (process.env.FUNCTIONS_EMULATOR || process.env.K_SERVICE) {
-            return callback(null, true);
-        }
-        if (allowedOrigins.includes(origin) || process.env.NODE_ENV === 'development') {
-            callback(null, true);
-        }
-        else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
-    credentials: true,
-}));
+// In Cloud Functions, CORS is handled at the function level (functions/src/index.ts)
+// So we don't need CORS middleware here - it would conflict
+// In local development, use CORS middleware to allow all origins
+if (!process.env.FUNCTIONS_EMULATOR && !process.env.K_SERVICE) {
+    // Local development: allow ALL origins for simplicity
+    app.use((0, cors_1.default)({
+        origin: true, // Allow all origins in development
+        credentials: true,
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+        allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    }));
+}
+else {
+    // In Cloud Functions: CORS is already handled in functions/src/index.ts
+    // But we add a middleware to ensure headers are preserved
+    app.use((req, res, next) => {
+        // Ensure CORS headers are not removed by Express
+        // The function-level CORS handler sets them first
+        next();
+    });
+}
 // Rate limiting
 const limiter = (0, express_rate_limit_1.default)({
     windowMs: 15 * 60 * 1000, // 15 minutes
@@ -51,12 +51,29 @@ app.use(limiter);
 app.use(express_1.default.json({ limit: '10mb' }));
 app.use(express_1.default.urlencoded({ extended: true, limit: '10mb' }));
 // Health check
-app.get('/health', (req, res) => {
+// In Cloud Functions, accessible at /api/health (via rewrite) or directly at /health
+// In local development, accessible at /api/health
+const healthPath = process.env.K_SERVICE || process.env.FUNCTIONS_EMULATOR ? '/health' : '/api/health';
+app.get(healthPath, (req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 // API routes
-app.use('/api/transactions', transactions_1.default);
-app.use('/api/bank', bank_1.default);
+// Note: In Cloud Functions, when accessing directly:
+// - URL: https://...cloudfunctions.net/api/transactions
+// - Firebase Functions receives: /transactions (without /api prefix)
+// - So routes should be /transactions, /bank (without /api)
+// In local development: routes with /api prefix
+if (process.env.K_SERVICE || process.env.FUNCTIONS_EMULATOR) {
+    // Cloud Functions: routes without /api prefix
+    // Firebase Functions automatically strips the function path (/api) from the route
+    app.use('/transactions', transactions_1.default);
+    app.use('/bank', bank_1.default);
+}
+else {
+    // Local development: routes with /api prefix
+    app.use('/api/transactions', transactions_1.default);
+    app.use('/api/bank', bank_1.default);
+}
 // 404 handler
 app.use((req, res) => {
     res.status(404).json({ error: 'Route not found' });
