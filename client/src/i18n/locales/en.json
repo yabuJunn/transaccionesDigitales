@@ -63,7 +63,9 @@
     "submitTransaction": "Submit Transaction",
     "sending": "Sending...",
     "transactionSent": "Transaction sent successfully",
-    "errorSending": "Error sending transaction. Please try again."
+    "errorSending": "Error sending transaction. Please try again.",
+    "loggedInAs": "Logged in as",
+    "logout": "Logout"
   },
   "validation": {
     "required": "This field is required",

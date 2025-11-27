@@ -38,7 +38,7 @@ const LandingPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
             {/* Customer Card */}
             <button
-              onClick={() => navigate('/client')}
+              onClick={() => navigate('/login-cliente')}
               className="btn-primary text-white rounded-lg p-8 shadow-lg transition-all duration-200 transform hover:scale-105"
             >
               <div className="text-4xl mb-4">👤</div>

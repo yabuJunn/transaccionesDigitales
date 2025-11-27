@@ -6,12 +6,14 @@ import * as path from 'path';
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 /**
- * Script to set custom claims (admin or bank) for Firebase users
+ * Script to set custom claims (admin, bank, or client) for Firebase users
  * 
  * Usage:
  *   tsx scripts/setCustomClaims.ts <uid|email> --claim=admin
  *   tsx scripts/setCustomClaims.ts <uid|email> --claim=bank
+ *   tsx scripts/setCustomClaims.ts <uid|email> --claim=client
  *   tsx scripts/setCustomClaims.ts <uid|email> --claim=admin,bank
+ *   tsx scripts/setCustomClaims.ts <uid|email> --claim=role:client
  */
 
 // Initialize Firebase Admin
@@ -38,7 +40,7 @@ if (!admin.apps.length) {
   }
 }
 
-async function setCustomClaims(identifier: string, claims: { admin?: boolean; bank?: boolean }): Promise<void> {
+async function setCustomClaims(identifier: string, claims: { admin?: boolean; bank?: boolean; role?: string }): Promise<void> {
   try {
     let user: admin.auth.UserRecord;
     
@@ -55,10 +57,20 @@ async function setCustomClaims(identifier: string, claims: { admin?: boolean; ba
     
     // Get existing claims to preserve them
     const existingClaims = user.customClaims || {};
-    const newClaims = {
+    
+    // Build new claims object
+    const newClaims: any = {
       ...existingClaims,
-      ...claims,
     };
+    
+    // Handle role separately (role: "client" instead of client: true)
+    if (claims.role) {
+      newClaims.role = claims.role;
+    } else {
+      // For admin and bank, use boolean flags
+      if (claims.admin !== undefined) newClaims.admin = claims.admin;
+      if (claims.bank !== undefined) newClaims.bank = claims.bank;
+    }
     
     await admin.auth().setCustomUserClaims(user.uid, newClaims);
     
@@ -80,30 +92,42 @@ if (!identifier) {
   console.log('\nUsage:');
   console.log('  tsx scripts/setCustomClaims.ts <uid|email> --claim=admin');
   console.log('  tsx scripts/setCustomClaims.ts <uid|email> --claim=bank');
+  console.log('  tsx scripts/setCustomClaims.ts <uid|email> --claim=client');
+  console.log('  tsx scripts/setCustomClaims.ts <uid|email> --claim=role:client');
   console.log('  tsx scripts/setCustomClaims.ts <uid|email> --claim=admin,bank');
   console.log('\nExamples:');
   console.log('  tsx scripts/setCustomClaims.ts user@example.com --claim=admin');
+  console.log('  tsx scripts/setCustomClaims.ts user@example.com --claim=client');
   console.log('  tsx scripts/setCustomClaims.ts abc123xyz --claim=bank');
   process.exit(1);
 }
 
 if (!claimArg) {
-  console.error('❌ Please specify --claim=admin or --claim=bank');
+  console.error('❌ Please specify --claim=admin, --claim=bank, or --claim=client');
   process.exit(1);
 }
 
 const claimValue = claimArg.split('=')[1];
-const claims: { admin?: boolean; bank?: boolean } = {};
+const claims: { admin?: boolean; bank?: boolean; role?: string } = {};
 
-if (claimValue.includes('admin')) {
-  claims.admin = true;
-}
-if (claimValue.includes('bank')) {
-  claims.bank = true;
+// Check for role:client format
+if (claimValue.startsWith('role:')) {
+  claims.role = claimValue.split(':')[1];
+} else {
+  // Legacy format: admin, bank, or client
+  if (claimValue.includes('admin')) {
+    claims.admin = true;
+  }
+  if (claimValue.includes('bank')) {
+    claims.bank = true;
+  }
+  if (claimValue.includes('client')) {
+    claims.role = 'client';
+  }
 }
 
 if (Object.keys(claims).length === 0) {
-  console.error('❌ Invalid claim value. Use --claim=admin or --claim=bank or --claim=admin,bank');
+  console.error('❌ Invalid claim value. Use --claim=admin, --claim=bank, --claim=client, or --claim=role:client');
   process.exit(1);
 }
 

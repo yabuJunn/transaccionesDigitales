@@ -12,6 +12,7 @@
     "seed": "npx tsx scripts/seed-from-csv.ts",
     "set-admin-claim": "npx tsx scripts/set-admin-claim.ts",
     "set-bank-claim": "npx tsx scripts/set-bank-claim.ts",
+    "set-client-claim": "npx tsx scripts/set-client-claim.ts",
     "lint": "npx eslint src --ext .ts"
   },
   "dependencies": {

@@ -63,7 +63,9 @@
     "submitTransaction": "Enviar Transacción",
     "sending": "Enviando...",
     "transactionSent": "Transacción enviada exitosamente",
-    "errorSending": "Error al enviar la transacción. Por favor, intente nuevamente."
+    "errorSending": "Error al enviar la transacción. Por favor, intente nuevamente.",
+    "loggedInAs": "Sesión iniciada como",
+    "logout": "Cerrar sesión"
   },
   "validation": {
     "required": "Este campo es obligatorio",

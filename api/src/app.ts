@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import transactionsRouter from './routes/transactions';
 import bankRouter from './routes/bank';
+import authRouter from './routes/auth';
 import './config/firebase'; // Initialize Firebase
 
 const app = express();
@@ -72,10 +73,12 @@ if (process.env.K_SERVICE || process.env.FUNCTIONS_EMULATOR) {
   // Firebase Functions automatically strips the function path (/api) from the route
   app.use('/transactions', transactionsRouter);
   app.use('/bank', bankRouter);
+  app.use('/auth', authRouter);
 } else {
   // Local development: routes with /api prefix
   app.use('/api/transactions', transactionsRouter);
   app.use('/api/bank', bankRouter);
+  app.use('/api/auth', authRouter);
 }
 
 // 404 handler

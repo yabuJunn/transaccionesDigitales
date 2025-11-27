@@ -1,20 +1,25 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import LandingPage from './pages/LandingPage';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminBankDashboard from './pages/AdminBankDashboard';
+import LoginCliente from './pages/LoginCliente';
 import TransactionForm from './components/TransactionForm';
 import SuccessMessage from './components/SuccessMessage';
 import ErrorMessage from './components/ErrorMessage';
 import LanguageSwitcher from './components/LandingPage/LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
 import AdminRouteGuard from './components/AdminDashboard/AdminRouteGuard';
+import PrivateClientRoute from './routes/PrivateClientRoute';
+import { logout } from './firebase/authClient';
 
 function TransactionFormPage() {
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const { t } = useTranslation();
 
   const handleSuccess = (message: string) => {
@@ -25,6 +30,15 @@ function TransactionFormPage() {
   const handleError = (message: string) => {
     setError(message);
     setSuccess(null);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/login-cliente');
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+    }
   };
 
   return (
@@ -38,9 +52,23 @@ function TransactionFormPage() {
             <p className="text-neutral-muted">
               {t('form.subtitle')}
             </p>
+            {user?.email && (
+              <p className="text-sm text-neutral-muted mt-2">
+                {t('form.loggedInAs')}: <span className="font-semibold text-primary">{user.email}</span>
+              </p>
+            )}
           </header>
           <div className="flex items-center gap-3">
             <LanguageSwitcher />
+            {user && (
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors duration-200"
+                title={t('form.logout')}
+              >
+                {t('form.logout')}
+              </button>
+            )}
           </div>
         </div>
 
@@ -68,7 +96,17 @@ const AppRoutes = () => {
     <Routes>
       {/* Public routes */}
       <Route path="/" element={<LandingPage />} />
-      <Route path="/client" element={<TransactionFormPage />} />
+      <Route path="/login-cliente" element={<LoginCliente />} />
+      
+      {/* Protected client route */}
+      <Route
+        path="/client"
+        element={
+          <PrivateClientRoute>
+            <TransactionFormPage />
+          </PrivateClientRoute>
+        }
+      />
 
       {/* Admin routes */}
       <Route 
