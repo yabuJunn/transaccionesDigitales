@@ -58,7 +58,7 @@ const LandingPage = () => {
 
             {/* Bank Card */}
             <button
-              onClick={() => navigate('/admin/bank')}
+              onClick={() => navigate('/login-bank')}
               className="btn-primary text-white rounded-lg p-8 shadow-lg transition-all duration-200 transform hover:scale-105"
             >
               <div className="text-4xl mb-4">🏦</div>

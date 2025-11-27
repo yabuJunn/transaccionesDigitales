@@ -80,3 +80,90 @@ export const isClient = async (user: User | null): Promise<boolean> => {
   return role === 'client';
 };
 
+/**
+ * Login de banco con Firebase Authentication
+ * Verifica que el usuario tenga el rol "bank"
+ * @param email - Email del banco
+ * @param password - Contraseña del banco
+ * @returns Usuario autenticado
+ */
+export const loginBank = async (email: string, password: string): Promise<User> => {
+  const auth = getFirebaseAuth();
+  if (!auth) {
+    throw new Error('Firebase Auth no está configurado');
+  }
+
+  try {
+    // 1. Autenticar con Firebase
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+
+    // 2. Obtener custom claims con getIdTokenResult (forzar refresh)
+    const tokenResult = await getIdTokenResult(user, true);
+    const role = tokenResult.claims.role as string | null;
+    
+    // También verificar el claim legacy "bank" para compatibilidad
+    const bankClaim = tokenResult.claims.bank as boolean | undefined;
+
+    // 3. Verificar que el usuario tenga rol "bank"
+    // Aceptamos tanto role === "bank" como bank === true (legacy)
+    // También verificar que NO sea admin (los admins no pueden usar este login)
+    const adminClaim = tokenResult.claims.admin as boolean | undefined;
+    if (adminClaim === true) {
+      // Si es admin, cerrar sesión y mostrar error
+      await signOut(auth);
+      throw new Error('Este usuario no pertenece al rol Banco.');
+    }
+
+    if (role !== 'bank' && bankClaim !== true) {
+      // Si no tiene el rol correcto, cerrar sesión inmediatamente
+      await signOut(auth);
+      throw new Error('Este usuario no pertenece al rol Banco.');
+    }
+
+    return user;
+  } catch (error: any) {
+    // Si ya cerramos sesión, el error ya fue lanzado arriba
+    if (error.message === 'Este usuario no pertenece al rol Banco.') {
+      throw error;
+    }
+
+    // Manejar otros errores comunes de Firebase Auth
+    if (error.code === 'auth/user-not-found') {
+      throw new Error('Usuario no encontrado');
+    } else if (error.code === 'auth/wrong-password') {
+      throw new Error('Contraseña incorrecta');
+    } else if (error.code === 'auth/invalid-email') {
+      throw new Error('Email inválido');
+    } else if (error.code === 'auth/user-disabled') {
+      throw new Error('Usuario deshabilitado');
+    } else if (error.code === 'auth/too-many-requests') {
+      throw new Error('Demasiados intentos. Intenta más tarde');
+    } else {
+      throw new Error(error.message || 'Error al iniciar sesión');
+    }
+  }
+};
+
+/**
+ * Verificar si el usuario tiene el rol de banco
+ * @param user - Usuario de Firebase Auth
+ * @returns true si el usuario tiene rol 'bank' o claim 'bank' === true
+ */
+export const isBank = async (user: User | null): Promise<boolean> => {
+  if (!user) {
+    return false;
+  }
+
+  try {
+    const tokenResult = await getIdTokenResult(user, true);
+    const role = tokenResult.claims.role as string | null;
+    const bankClaim = tokenResult.claims.bank as boolean | undefined;
+    
+    return role === 'bank' || bankClaim === true;
+  } catch (error) {
+    console.error('Error al verificar el rol de banco:', error);
+    return false;
+  }
+};
+

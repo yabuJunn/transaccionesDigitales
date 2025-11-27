@@ -6,6 +6,7 @@ import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminBankDashboard from './pages/AdminBankDashboard';
 import LoginCliente from './pages/LoginCliente';
+import LoginBank from './pages/LoginBank';
 import TransactionForm from './components/TransactionForm';
 import SuccessMessage from './components/SuccessMessage';
 import ErrorMessage from './components/ErrorMessage';
@@ -13,6 +14,7 @@ import LanguageSwitcher from './components/LandingPage/LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
 import AdminRouteGuard from './components/AdminDashboard/AdminRouteGuard';
 import PrivateClientRoute from './routes/PrivateClientRoute';
+import PrivateBankRoute from './routes/PrivateBankRoute';
 import { logout } from './firebase/authClient';
 
 function TransactionFormPage() {
@@ -97,6 +99,7 @@ const AppRoutes = () => {
       {/* Public routes */}
       <Route path="/" element={<LandingPage />} />
       <Route path="/login-cliente" element={<LoginCliente />} />
+      <Route path="/login-bank" element={<LoginBank />} />
       
       {/* Protected client route */}
       <Route
@@ -105,6 +108,16 @@ const AppRoutes = () => {
           <PrivateClientRoute>
             <TransactionFormPage />
           </PrivateClientRoute>
+        }
+      />
+
+      {/* Protected bank route */}
+      <Route
+        path="/bank"
+        element={
+          <PrivateBankRoute>
+            <AdminBankDashboard />
+          </PrivateBankRoute>
         }
       />
 
@@ -125,17 +138,8 @@ const AppRoutes = () => {
           </AdminRouteGuard>
         }
       />
-      <Route
-        path="/admin/bank"
-        element={
-          <AdminRouteGuard>
-            <AdminBankDashboard />
-          </AdminRouteGuard>
-        }
-      />
-
-      {/* Redirect /bank to /admin/bank for backward compatibility */}
-      <Route path="/bank" element={<Navigate to="/admin/bank" replace />} />
+      {/* Redirect /admin/bank to /bank for consistency */}
+      <Route path="/admin/bank" element={<Navigate to="/bank" replace />} />
     </Routes>
   );
 };

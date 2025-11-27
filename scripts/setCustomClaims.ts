@@ -63,13 +63,23 @@ async function setCustomClaims(identifier: string, claims: { admin?: boolean; ba
       ...existingClaims,
     };
     
-    // Handle role separately (role: "client" instead of client: true)
+    // Handle role separately (role: "client" or role: "bank")
     if (claims.role) {
       newClaims.role = claims.role;
-    } else {
-      // For admin and bank, use boolean flags
-      if (claims.admin !== undefined) newClaims.admin = claims.admin;
-      if (claims.bank !== undefined) newClaims.bank = claims.bank;
+      // Si es role: "bank", también establecer bank: true para compatibilidad
+      if (claims.role === 'bank') {
+        newClaims.bank = true;
+      }
+    }
+    
+    // For admin and bank (legacy), use boolean flags
+    if (claims.admin !== undefined) newClaims.admin = claims.admin;
+    if (claims.bank !== undefined) {
+      newClaims.bank = claims.bank;
+      // Si se establece bank: true pero no hay role, establecer role: "bank"
+      if (claims.bank && !newClaims.role) {
+        newClaims.role = 'bank';
+      }
     }
     
     await admin.auth().setCustomUserClaims(user.uid, newClaims);
@@ -110,16 +120,22 @@ if (!claimArg) {
 const claimValue = claimArg.split('=')[1];
 const claims: { admin?: boolean; bank?: boolean; role?: string } = {};
 
-// Check for role:client format
+// Check for role:client or role:bank format
 if (claimValue.startsWith('role:')) {
-  claims.role = claimValue.split(':')[1];
+  const roleValue = claimValue.split(':')[1];
+  claims.role = roleValue;
+  // Si es role:bank, también establecer bank: true para compatibilidad
+  if (roleValue === 'bank') {
+    claims.bank = true;
+  }
 } else {
   // Legacy format: admin, bank, or client
   if (claimValue.includes('admin')) {
     claims.admin = true;
   }
   if (claimValue.includes('bank')) {
-    claims.bank = true;
+    claims.role = 'bank';
+    claims.bank = true; // Mantener compatibilidad
   }
   if (claimValue.includes('client')) {
     claims.role = 'client';

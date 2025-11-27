@@ -150,7 +150,20 @@
     "fee": "Fee",
     "paymentMode": "Payment Mode",
     "backToHome": "← Back to home",
-    "showingResults": "Showing {{from}} to {{to}} of {{total}} results"
+    "showingResults": "Showing {{from}} to {{to}} of {{total}} results",
+    "loggedInAs": "Logged in as",
+    "logout": "Logout"
+  },
+  "loginBank": {
+    "title": "Bank Login",
+    "subtitle": "Enter your credentials to access the bank audit panel",
+    "email": "Email",
+    "password": "Password",
+    "login_button": "Log In",
+    "error_wrong_role": "This user does not belong to the Bank role.",
+    "error_invalid": "Invalid credentials.",
+    "role_required": "Your account is not authorized to access this area.",
+    "backToHome": "Back to home"
   }
 }
 

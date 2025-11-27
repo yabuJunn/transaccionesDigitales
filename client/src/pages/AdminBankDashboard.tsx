@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { getBankTransactions, exportBankTransactionsCSV } from '../services/api';
 import { Transaction } from '../types';
 import BankDashboardContent from '../components/AdminDashboard/BankDashboardContent';
+import { logout } from '../firebase/authClient';
 
 interface BankFilters {
   from?: string;
@@ -18,12 +20,22 @@ interface BankFilters {
 const AdminBankDashboard = () => {
   const { t } = useTranslation();
   const { user, getIdToken } = useAuth();
+  const navigate = useNavigate();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState<BankFilters>({});
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [pagination, setPagination] = useState({ page: 1, limit: 20, total: 0, totalPages: 1 });
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/login-bank');
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+    }
+  };
 
   const fetchTransactions = async () => {
     if (!user) return;
@@ -87,6 +99,8 @@ const AdminBankDashboard = () => {
   return (
     <BankDashboardContent
       t={t}
+      user={user}
+      onLogout={handleLogout}
       transactions={transactions}
       loading={loading}
       filters={filters}

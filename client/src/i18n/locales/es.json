@@ -150,7 +150,20 @@
     "fee": "Tarifa",
     "paymentMode": "Modo de Pago",
     "backToHome": "← Volver al inicio",
-    "showingResults": "Mostrando {{from}} a {{to}} de {{total}} resultados"
+    "showingResults": "Mostrando {{from}} a {{to}} de {{total}} resultados",
+    "loggedInAs": "Sesión iniciada como",
+    "logout": "Cerrar sesión"
+  },
+  "loginBank": {
+    "title": "Inicio de sesión del banco",
+    "subtitle": "Ingresa tus credenciales para acceder al panel de auditoría bancaria",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "login_button": "Iniciar sesión",
+    "error_wrong_role": "Este usuario no pertenece al rol Banco.",
+    "error_invalid": "Credenciales inválidas.",
+    "role_required": "Tu cuenta no tiene permisos para acceder.",
+    "backToHome": "Volver al inicio"
   }
 }
 

@@ -7,12 +7,18 @@ async function setBankClaim(email: string): Promise<void> {
   try {
     const user = await auth.getUserByEmail(email);
     
-    // Set custom claim
+    // Get existing claims to preserve them
+    const existingClaims = user.customClaims || {};
+    
+    // Set custom claims: both role: "bank" and bank: true (for compatibility)
     await auth.setCustomUserClaims(user.uid, {
-      bank: true,
+      ...existingClaims,
+      role: 'bank',
+      bank: true, // Mantener compatibilidad con sistema legacy
     });
 
-    console.log(`✅ Successfully set bank:true claim for user: ${email} (UID: ${user.uid})`);
+    console.log(`✅ Successfully set bank role for user: ${email} (UID: ${user.uid})`);
+    console.log(`   Claims: role: "bank", bank: true`);
     console.log('⚠️  Important: The user must sign out and sign in again for the claim to take effect.');
   } catch (error) {
     console.error('❌ Error setting bank claim:', error);
