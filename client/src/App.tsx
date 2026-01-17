@@ -7,6 +7,8 @@ import AdminDashboard from './pages/AdminDashboard';
 import AdminBankDashboard from './pages/AdminBankDashboard';
 import LoginCliente from './pages/LoginCliente';
 import LoginBank from './pages/LoginBank';
+import RegisterClient from './pages/admin/register-client/RegisterClient';
+import RegisterBank from './pages/admin/register-bank/RegisterBank';
 import TransactionForm from './components/TransactionForm';
 import SuccessMessage from './components/SuccessMessage';
 import ErrorMessage from './components/ErrorMessage';
@@ -135,6 +137,22 @@ const AppRoutes = () => {
         element={
           <AdminRouteGuard>
             <AdminDashboard />
+          </AdminRouteGuard>
+        }
+      />
+      <Route
+        path="/admin/register-client"
+        element={
+          <AdminRouteGuard>
+            <RegisterClient />
+          </AdminRouteGuard>
+        }
+      />
+      <Route
+        path="/admin/register-bank"
+        element={
+          <AdminRouteGuard>
+            <RegisterBank />
           </AdminRouteGuard>
         }
       />

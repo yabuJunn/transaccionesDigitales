@@ -10,10 +10,17 @@ dotenv.config();
 async function setAdminClaim(email: string): Promise<void> {
   try {
     const user = await auth.getUserByEmail(email);
+    const existingClaims = user.customClaims || {};
     
-    await auth.setCustomUserClaims(user.uid, { admin: true });
+    // Asignar custom claims: role: "admin" y admin: true (para compatibilidad)
+    await auth.setCustomUserClaims(user.uid, {
+      ...existingClaims,
+      role: 'admin',
+      admin: true, // Mantener compatibilidad con sistema legacy
+    });
     
-    console.log(`✅ Successfully set admin claim for user: ${email} (UID: ${user.uid})`);
+    console.log(`✅ Successfully set admin role for user: ${email} (UID: ${user.uid})`);
+    console.log(`   Claims: role: "admin", admin: true`);
     console.log('⚠️  User must sign out and sign in again for the claim to take effect');
   } catch (error) {
     console.error('❌ Error setting admin claim:', error);

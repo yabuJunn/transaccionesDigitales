@@ -7,6 +7,7 @@ export interface AuthenticatedRequest extends Request {
     email?: string;
     admin?: boolean;
     bank?: boolean;
+    role?: string; // 'admin' | 'bank' | 'client'
   };
 }
 
@@ -27,9 +28,13 @@ export async function verifyFirebaseToken(
   try {
     const decoded = await auth.verifyIdToken(idToken);
     
-    // Check custom claim or ADMIN_UIDS env var
+    // Check custom claims: support both legacy (admin: true) and new (role: "admin")
     const adminUids = process.env.ADMIN_UIDS?.split(',').map(uid => uid.trim()) || [];
-    const isAdmin = decoded.admin === true || adminUids.includes(decoded.uid);
+    const role = decoded.role as string | undefined;
+    const isAdmin = 
+      decoded.admin === true || 
+      role === 'admin' || 
+      adminUids.includes(decoded.uid);
 
     if (!isAdmin) {
       res.status(403).json({ error: 'Forbidden: Admin access required' });
@@ -40,6 +45,7 @@ export async function verifyFirebaseToken(
       uid: decoded.uid,
       email: decoded.email,
       admin: true,
+      role: role || (decoded.admin ? 'admin' : undefined),
     };
 
     next();

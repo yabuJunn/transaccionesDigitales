@@ -5,6 +5,7 @@ export interface AuthenticatedRequest extends Request {
         email?: string;
         admin?: boolean;
         bank?: boolean;
+        role?: string;
     };
 }
 export declare function verifyFirebaseToken(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void>;

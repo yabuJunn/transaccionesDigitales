@@ -49,18 +49,28 @@ const LoginCliente = () => {
     <div className="min-h-screen bg-neutral-surface flex items-center justify-center px-4 py-8">
       <div className="max-w-md w-full">
         {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          <div className="flex items-center">
-            <img 
-              src="/assets/favicon.png" 
-              alt="Globan Capital logo" 
-              className="h-12 md:h-16"
-            />
-          </div>
-          <div className="flex items-center gap-3">
-            <ThemeToggle />
-            <LanguageSwitcher />
-          </div>
+        <div className="flex justify-start items-center mb-8">
+          <button
+            onClick={() => navigate('/')}
+            className="flex items-center text-primary hover:text-primary/80 transition-colors"
+            title={t('login.backToHome', 'Volver al inicio')}
+          >
+            <svg
+              className="w-6 h-6 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
+            </svg>
+            <span className="text-sm font-medium">{t('login.backToHome', 'Volver al inicio')}</span>
+          </button>
         </div>
 
         {/* Login Card */}
@@ -120,13 +130,19 @@ const LoginCliente = () => {
             </button>
           </form>
 
-          <div className="mt-6 text-center">
-            <button
-              onClick={() => navigate('/')}
-              className="text-primary hover:underline text-sm"
-            >
-              {t('login.backToHome', 'Volver al inicio')}
-            </button>
+          <div className="mt-6 space-y-4">
+            <div className="text-center">
+              <button
+                onClick={() => navigate('/')}
+                className="text-primary hover:underline text-sm"
+              >
+                {t('login.backToHome', 'Volver al inicio')}
+              </button>
+            </div>
+            <div className="flex justify-center items-center gap-3 pt-4 border-t border-neutral-border">
+              <ThemeToggle />
+              <LanguageSwitcher />
+            </div>
           </div>
         </div>
       </div>

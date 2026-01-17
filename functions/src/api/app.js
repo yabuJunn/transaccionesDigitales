@@ -9,6 +9,7 @@ const helmet_1 = __importDefault(require("helmet"));
 const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
 const transactions_1 = __importDefault(require("./routes/transactions"));
 const bank_1 = __importDefault(require("./routes/bank"));
+const auth_1 = __importDefault(require("./routes/auth"));
 require("./config/firebase"); // Initialize Firebase
 const app = (0, express_1.default)();
 // Security middlewares
@@ -68,11 +69,13 @@ if (process.env.K_SERVICE || process.env.FUNCTIONS_EMULATOR) {
     // Firebase Functions automatically strips the function path (/api) from the route
     app.use('/transactions', transactions_1.default);
     app.use('/bank', bank_1.default);
+    app.use('/auth', auth_1.default);
 }
 else {
     // Local development: routes with /api prefix
     app.use('/api/transactions', transactions_1.default);
     app.use('/api/bank', bank_1.default);
+    app.use('/api/auth', auth_1.default);
 }
 // 404 handler
 app.use((req, res) => {

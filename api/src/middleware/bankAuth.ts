@@ -19,11 +19,19 @@ export async function verifyBankToken(
   try {
     const decoded = await auth.verifyIdToken(idToken);
     
-    // Check custom claim or BANK_UIDS env var
+    // Check custom claims: support both legacy (bank: true) and new (role: "bank")
+    const role = decoded.role as string | undefined;
     const bankUids = process.env.BANK_UIDS?.split(',').map(uid => uid.trim()) || [];
-    const isBank = decoded.bank === true || bankUids.includes(decoded.uid);
+    const isBank = 
+      decoded.bank === true || 
+      role === 'bank' || 
+      bankUids.includes(decoded.uid);
+    
     const adminUids = process.env.ADMIN_UIDS?.split(',').map(uid => uid.trim()) || [];
-    const isAdmin = decoded.admin === true || adminUids.includes(decoded.uid);
+    const isAdmin = 
+      decoded.admin === true || 
+      role === 'admin' || 
+      adminUids.includes(decoded.uid);
 
     // Bank users or admins can access bank endpoints
     if (!isBank && !isAdmin) {
@@ -36,6 +44,7 @@ export async function verifyBankToken(
       email: decoded.email,
       admin: isAdmin,
       bank: isBank || isAdmin, // Admins can also access bank endpoints
+      role: role || (decoded.bank ? 'bank' : decoded.admin ? 'admin' : undefined),
     };
 
     next();

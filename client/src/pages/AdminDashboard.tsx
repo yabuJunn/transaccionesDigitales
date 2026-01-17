@@ -122,6 +122,25 @@ const AdminDashboard = () => {
       <DashboardHeader user={user} onLogout={handleLogout} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Account Registration Section */}
+        <div className="mb-6 card-white p-6">
+          <h2 className="text-xl font-semibold text-primary mb-4">{t('admin.accountManagement')}</h2>
+          <div className="flex flex-wrap gap-4">
+            <button
+              onClick={() => navigate('/admin/register-client')}
+              className="btn-primary text-white px-6 py-3 rounded-lg font-semibold transition-all hover:scale-105"
+            >
+              {t('admin.registerClient')}
+            </button>
+            <button
+              onClick={() => navigate('/admin/register-bank')}
+              className="btn-secondary px-6 py-3 rounded-lg font-semibold transition-all hover:scale-105"
+            >
+              {t('admin.registerBank')}
+            </button>
+          </div>
+        </div>
+
         {error && (
           <div className="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200 px-4 py-3 rounded-md">
             {error}

@@ -123,7 +123,10 @@
     "idNumber": "ID Number",
     "businessName": "Business Name",
     "ein": "EIN",
-    "errorLoadingTransactions": "Error loading transactions"
+    "errorLoadingTransactions": "Error loading transactions",
+    "accountManagement": "Account Management",
+    "registerClient": "Register Client",
+    "registerBank": "Register Bank Auditor"
   },
   "bank": {
     "title": "Bank Auditor Dashboard",
@@ -164,6 +167,46 @@
     "error_invalid": "Invalid credentials.",
     "role_required": "Your account is not authorized to access this area.",
     "backToHome": "Back to home"
+  },
+  "registerClient": {
+    "title": "Register Client",
+    "subtitle": "Create a new client account in the system",
+    "email": "Email",
+    "email_placeholder": "client@example.com",
+    "password": "Password",
+    "password_placeholder": "••••••••",
+    "password_hint": "Minimum 6 characters",
+    "confirm_password": "Confirm Password",
+    "confirm_password_placeholder": "••••••••",
+    "create_account": "Create Account",
+    "back_dashboard": "Back to Dashboard",
+    "success": "Account created successfully.",
+    "error_required": "All fields are required.",
+    "error_invalid_email": "Invalid email.",
+    "error_password_length": "Password must be at least 6 characters.",
+    "error_mismatch": "Passwords do not match.",
+    "error_unauthorized": "You do not have permission to perform this action.",
+    "error_general": "An error occurred, please try again."
+  },
+  "registerBank": {
+    "title": "Register Bank Auditor",
+    "subtitle": "Create a new bank auditor account in the system",
+    "email": "Email",
+    "email_placeholder": "auditor@bank.com",
+    "password": "Password",
+    "password_placeholder": "••••••••",
+    "password_hint": "Minimum 6 characters",
+    "confirm_password": "Confirm Password",
+    "confirm_password_placeholder": "••••••••",
+    "create_account": "Create Account",
+    "back_dashboard": "Back to Dashboard",
+    "success": "Account created successfully.",
+    "error_required": "All fields are required.",
+    "error_invalid_email": "Invalid email.",
+    "error_password_length": "Password must be at least 6 characters.",
+    "error_mismatch": "Passwords do not match.",
+    "error_unauthorized": "You do not have permission to perform this action.",
+    "error_general": "An error occurred, please try again."
   }
 }
 

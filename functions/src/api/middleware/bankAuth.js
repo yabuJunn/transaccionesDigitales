@@ -11,11 +11,16 @@ async function verifyBankToken(req, res, next) {
     const idToken = header.split(' ')[1];
     try {
         const decoded = await firebase_1.auth.verifyIdToken(idToken);
-        // Check custom claim or BANK_UIDS env var
+        // Check custom claims: support both legacy (bank: true) and new (role: "bank")
+        const role = decoded.role;
         const bankUids = process.env.BANK_UIDS?.split(',').map(uid => uid.trim()) || [];
-        const isBank = decoded.bank === true || bankUids.includes(decoded.uid);
+        const isBank = decoded.bank === true ||
+            role === 'bank' ||
+            bankUids.includes(decoded.uid);
         const adminUids = process.env.ADMIN_UIDS?.split(',').map(uid => uid.trim()) || [];
-        const isAdmin = decoded.admin === true || adminUids.includes(decoded.uid);
+        const isAdmin = decoded.admin === true ||
+            role === 'admin' ||
+            adminUids.includes(decoded.uid);
         // Bank users or admins can access bank endpoints
         if (!isBank && !isAdmin) {
             res.status(403).json({ error: 'Forbidden: Bank or Admin access required' });
@@ -26,6 +31,7 @@ async function verifyBankToken(req, res, next) {
             email: decoded.email,
             admin: isAdmin,
             bank: isBank || isAdmin, // Admins can also access bank endpoints
+            role: role || (decoded.bank ? 'bank' : decoded.admin ? 'admin' : undefined),
         };
         next();
     }

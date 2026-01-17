@@ -1,4 +1,5 @@
 import { FormEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import ThemeToggle from '../ThemeToggle';
 
@@ -22,12 +23,33 @@ const LoginForm = ({
   onSubmit,
 }: LoginFormProps) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-neutral-surface py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
-        <div className="flex justify-end">
-          <ThemeToggle />
+        <div className="flex justify-start items-center">
+          <button
+            onClick={() => navigate('/')}
+            className="flex items-center text-primary hover:text-primary/80 transition-colors"
+            title={t('admin.backToHome', 'Volver al inicio')}
+          >
+            <svg
+              className="w-6 h-6 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
+            </svg>
+            <span className="text-sm font-medium">{t('admin.backToHome', 'Volver al inicio')}</span>
+          </button>
         </div>
         <div className="text-center">
           <img 
@@ -93,6 +115,19 @@ const LoginForm = ({
             </button>
           </div>
         </form>
+        <div className="space-y-4">
+          <div className="text-center">
+            <button
+              onClick={() => navigate('/')}
+              className="text-primary hover:underline text-sm"
+            >
+              {t('admin.backToHome', '← Volver al inicio')}
+            </button>
+          </div>
+          <div className="flex justify-center items-center pt-4 border-t border-neutral-border">
+            <ThemeToggle />
+          </div>
+        </div>
       </div>
     </div>
   );

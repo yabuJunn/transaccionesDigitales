@@ -1,9 +1,38 @@
 import * as dotenv from 'dotenv';
 import * as admin from 'firebase-admin';
 import * as path from 'path';
+import * as fs from 'fs';
 
-// Load environment variables
-dotenv.config({ path: path.resolve(__dirname, '../.env') });
+// Get project root (assumes script is in scripts/ folder)
+// process.cwd() returns the directory from which the command was executed
+const cwd = process.cwd();
+const projectRoot = cwd;
+const apiDir = path.resolve(projectRoot, 'api');
+
+// Load environment variables - try multiple locations
+const rootEnvPath = path.resolve(projectRoot, '.env');
+const apiEnvPath = path.resolve(apiDir, '.env');
+
+// Try to load .env from project root first, then from api folder
+let envLoaded = false;
+if (fs.existsSync(rootEnvPath)) {
+  dotenv.config({ path: rootEnvPath });
+  console.log('✅ Loaded .env from project root');
+  envLoaded = true;
+} else if (fs.existsSync(apiEnvPath)) {
+  dotenv.config({ path: apiEnvPath });
+  console.log('✅ Loaded .env from api folder');
+  envLoaded = true;
+} else {
+  // Try default location (current working directory)
+  dotenv.config();
+  if (fs.existsSync(path.resolve(cwd, '.env'))) {
+    console.log('✅ Loaded .env from current working directory');
+    envLoaded = true;
+  } else {
+    console.log('⚠️  No .env file found in common locations');
+  }
+}
 
 /**
  * Script to set custom claims (admin, bank, or client) for Firebase users
@@ -22,6 +51,15 @@ if (!admin.apps.length) {
     const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
     
     if (!process.env.FIREBASE_PROJECT_ID || !process.env.FIREBASE_CLIENT_EMAIL || !privateKey) {
+      console.error('\n❌ Missing Firebase Admin credentials.');
+      console.error('   Please check your .env file. It should be located in:');
+      console.error('   - Project root: .env');
+      console.error('   - Or in api folder: api/.env');
+      console.error('\n   Required variables:');
+      console.error('   - FIREBASE_PROJECT_ID');
+      console.error('   - FIREBASE_CLIENT_EMAIL');
+      console.error('   - FIREBASE_PRIVATE_KEY');
+      console.error('\n   See README.md for instructions on how to set up Firebase credentials.\n');
       throw new Error('Missing Firebase Admin credentials. Check your .env file.');
     }
 
@@ -131,7 +169,8 @@ if (claimValue.startsWith('role:')) {
 } else {
   // Legacy format: admin, bank, or client
   if (claimValue.includes('admin')) {
-    claims.admin = true;
+    claims.role = 'admin';
+    claims.admin = true; // Mantener compatibilidad con sistema legacy
   }
   if (claimValue.includes('bank')) {
     claims.role = 'bank';

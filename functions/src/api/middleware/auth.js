@@ -11,9 +11,12 @@ async function verifyFirebaseToken(req, res, next) {
     const idToken = header.split(' ')[1];
     try {
         const decoded = await firebase_1.auth.verifyIdToken(idToken);
-        // Check custom claim or ADMIN_UIDS env var
+        // Check custom claims: support both legacy (admin: true) and new (role: "admin")
         const adminUids = process.env.ADMIN_UIDS?.split(',').map(uid => uid.trim()) || [];
-        const isAdmin = decoded.admin === true || adminUids.includes(decoded.uid);
+        const role = decoded.role;
+        const isAdmin = decoded.admin === true ||
+            role === 'admin' ||
+            adminUids.includes(decoded.uid);
         if (!isAdmin) {
             res.status(403).json({ error: 'Forbidden: Admin access required' });
             return;
@@ -22,6 +25,7 @@ async function verifyFirebaseToken(req, res, next) {
             uid: decoded.uid,
             email: decoded.email,
             admin: true,
+            role: role || (decoded.admin ? 'admin' : undefined),
         };
         next();
     }

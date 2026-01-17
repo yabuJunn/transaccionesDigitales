@@ -101,3 +101,27 @@ export const exportBankTransactionsCSV = async (token: string, filters: Record<s
   window.URL.revokeObjectURL(url);
 };
 
+// Admin endpoints - account creation
+interface CreateAccountRequest {
+  email: string;
+  password: string;
+}
+
+export const createClientAccount = async (token: string, data: CreateAccountRequest) => {
+  const response = await api.post('/auth/createClientAccount', data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+
+export const createBankAccount = async (token: string, data: CreateAccountRequest) => {
+  const response = await api.post('/auth/createBankAccount', data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+
