@@ -2,9 +2,8 @@ import { useState } from 'react';
 import { TransactionInput, Person } from '../types';
 import { submitTransaction } from '../services/api';
 import { useTranslation } from 'react-i18next';
-// Firebase Storage imports are commented out - upload is temporarily disabled
-// import { getFirebaseStorage } from '../config/firebase';
-// import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { getFirebaseStorage } from '../config/firebase';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 interface TransactionFormProps {
   onSuccess: (message: string) => void;
@@ -14,6 +13,7 @@ interface TransactionFormProps {
 const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
   const [receiptPreview, setReceiptPreview] = useState<string | null>(null);
   const [formData, setFormData] = useState<TransactionInput>({
@@ -98,18 +98,44 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
   };
 
   const uploadReceiptToStorage = async (): Promise<string | null> => {
-    // Firebase Storage upload is temporarily disabled
-    // The UI is kept for future implementation
-    // For now, we'll just return null and allow the form to submit without receiptUrl
     if (!receiptFile) return null;
 
-    // TODO: Enable Firebase Storage upload when the plan is upgraded
-    // For now, we'll just store the file name locally for reference
-    console.log('Receipt file selected:', receiptFile.name, 'Size:', receiptFile.size);
-    
-    // Return null to indicate no URL was uploaded
-    // The form will still submit successfully without receiptUrl
-    return null;
+    const storage = getFirebaseStorage();
+    if (!storage) {
+      onError(t('validation.storageNotConfigured') || 'Firebase Storage no está configurado');
+      return null;
+    }
+
+    try {
+      setUploading(true);
+
+      // Generate unique filename: receipts/{timestamp}-{invoiceNumber}-{originalName}
+      const timestamp = Date.now();
+      const invoiceNumber = formData.invoiceNumber || 'unknown';
+      // Sanitize filename: remove special characters and spaces
+      const sanitizedInvoiceNumber = invoiceNumber.replace(/[^a-zA-Z0-9]/g, '_');
+      const sanitizedOriginalName = receiptFile.name.replace(/[^a-zA-Z0-9.]/g, '_');
+      const fileName = `receipts/${timestamp}-${sanitizedInvoiceNumber}-${sanitizedOriginalName}`;
+
+      // Create storage reference
+      const storageRef = ref(storage, fileName);
+
+      // Upload file
+      const snapshot = await uploadBytes(storageRef, receiptFile);
+      
+      // Get download URL
+      const downloadURL = await getDownloadURL(snapshot.ref);
+
+      console.log('✅ Receipt uploaded successfully:', downloadURL);
+      setUploading(false);
+      return downloadURL;
+    } catch (error: any) {
+      console.error('❌ Error uploading receipt:', error);
+      setUploading(false);
+      const errorMessage = error.message || t('validation.uploadError') || 'Error al subir el recibo';
+      onError(errorMessage);
+      return null;
+    }
   };
 
   const handleChange = (
@@ -139,16 +165,23 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
     setLoading(true);
 
     try {
-      // Upload receipt if file is selected (currently disabled)
+      // Upload receipt if file is selected
       let receiptUrl = formData.receiptUrl;
       if (receiptFile && !receiptUrl) {
-        // Try to upload (will return null for now)
         const uploadedUrl = await uploadReceiptToStorage();
         if (uploadedUrl) {
           receiptUrl = uploadedUrl;
+        } else {
+          // If upload failed, ask user if they want to continue without receipt
+          const continueWithoutReceipt = window.confirm(
+            t('validation.uploadFailedContinue') || 
+            'Error al subir el recibo. ¿Deseas continuar sin el recibo?'
+          );
+          if (!continueWithoutReceipt) {
+            setLoading(false);
+            return;
+          }
         }
-        // Continue with form submission even if upload is disabled
-        // The receiptUrl will be undefined/null and the form will still submit
       }
 
       // Validate phone format (basic validation)
@@ -587,15 +620,18 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
           <label className="block text-sm font-medium text-primary mb-2">
             {t('form.uploadReceipt')}
           </label>
-          <div className="mb-2 p-2 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded text-sm text-yellow-800 dark:text-yellow-200">
-            ⚠️ Receipt upload is temporarily disabled. The file selection UI is available for future use.
-          </div>
           <input
             type="file"
             accept="image/*,.pdf"
             onChange={handleReceiptChange}
-            className="w-full px-3 py-2 border border-neutral-border bg-neutral-bg rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+            disabled={uploading || loading}
+            className="w-full px-3 py-2 border border-neutral-border bg-neutral-bg rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed"
           />
+          {uploading && (
+            <div className="mt-2 p-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded text-sm text-blue-800 dark:text-blue-200">
+              📤 {t('form.uploadingReceipt') || 'Subiendo recibo...'}
+            </div>
+          )}
           {receiptPreview && (
             <div className="mt-4">
               <p className="text-sm font-medium text-primary mb-2">{t('form.receiptPreview')}</p>
@@ -640,10 +676,15 @@ const TransactionForm = ({ onSuccess, onError }: TransactionFormProps) => {
       <div className="flex justify-end pt-4">
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || uploading}
           className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {loading ? t('form.sending') : t('form.submitTransaction')}
+          {uploading 
+            ? (t('form.uploadingReceipt') || 'Subiendo recibo...')
+            : loading 
+            ? t('form.sending') 
+            : t('form.submitTransaction')
+          }
         </button>
       </div>
     </form>

@@ -280,5 +280,63 @@ async (req, res) => {
         });
     }
 });
+/**
+ * POST /auth/setAdminRole
+ * Asigna el rol "admin" a un usuario por email
+ * Requiere autenticación de admin
+ */
+router.post('/setAdminRole', auth_1.verifyFirebaseToken, // Requiere autenticación de admin
+async (req, res) => {
+    try {
+        const { email } = req.body;
+        // Validar que se proporcionó el email
+        if (!email || typeof email !== 'string') {
+            return res.status(400).json({
+                success: false,
+                error: 'Email es requerido',
+            });
+        }
+        // Buscar el usuario por email
+        let user;
+        try {
+            user = await firebase_1.auth.getUserByEmail(email);
+        }
+        catch (error) {
+            if (error.code === 'auth/user-not-found') {
+                return res.status(404).json({
+                    success: false,
+                    error: 'Usuario no encontrado con ese email',
+                });
+            }
+            throw error;
+        }
+        // Obtener claims existentes para preservarlos
+        const existingClaims = user.customClaims || {};
+        // Asignar custom claims: role: "admin" y admin: true (para compatibilidad)
+        await firebase_1.auth.setCustomUserClaims(user.uid, {
+            ...existingClaims,
+            role: 'admin',
+            admin: true, // Mantener compatibilidad con sistema legacy
+        });
+        console.log(`✅ Rol "admin" asignado a usuario: ${email} (UID: ${user.uid})`);
+        return res.json({
+            success: true,
+            message: `Rol "admin" asignado exitosamente a ${email}. El usuario debe refrescar su token para que los cambios tomen efecto.`,
+            data: {
+                uid: user.uid,
+                email: user.email,
+                role: 'admin',
+            },
+        });
+    }
+    catch (error) {
+        console.error('Error al asignar rol de administrador:', error);
+        return res.status(500).json({
+            success: false,
+            error: 'Error interno del servidor',
+            message: process.env.NODE_ENV === 'development' ? error.message : undefined,
+        });
+    }
+});
 exports.default = router;
 //# sourceMappingURL=auth.js.map
