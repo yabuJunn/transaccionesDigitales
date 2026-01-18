@@ -113,7 +113,7 @@ const BankDashboardContent = ({
           <div className="flex items-center space-x-4">
             <img 
               src="/assets/favicon.png" 
-              alt="Globan Capital logo" 
+              alt="165 Group logo" 
               className="h-10"
             />
             <h1 className="text-3xl font-bold text-primary">{t('bank.title')}</h1>

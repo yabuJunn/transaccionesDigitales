@@ -15,7 +15,7 @@ const LandingPage = () => {
           <div className="flex items-center">
             <img 
               src="/assets/favicon.png" 
-              alt="Globan Capital logo" 
+              alt="165 Group logo" 
               className="h-12 md:h-16"
             />
           </div>

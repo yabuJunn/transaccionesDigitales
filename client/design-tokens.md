@@ -1,4 +1,4 @@
-# Design Tokens - Globan Capital
+# Design Tokens - 165 Group
 
 Esta guía documenta la paleta de colores corporativa y las variables CSS utilizadas en la aplicación.
 
@@ -187,7 +187,7 @@ El archivo `globals.css` incluye un scaffold para modo oscuro. Para activarlo, d
 
 ## Notas
 
-- Los colores primarios y secundarios provienen directamente del logo de Globan Capital
+- Los colores primarios y secundarios provienen directamente del logo de 165 Group
 - El color de acento (azul) fue elegido para proporcionar contraste y destacar acciones importantes
 - Todas las variables CSS usan `var(--color-*)` para permitir cambios dinámicos en tiempo de ejecución
 - Tailwind está configurado para usar estas variables, permitiendo cambios de tema futuros

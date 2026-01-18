@@ -3,7 +3,7 @@
     "invoiceDate": "1/07/2025",
     "invoiceNumber": "186",
     "invoiceStatus": "PAID",
-    "moneyTransmitterCode": "GLOBAN CAPITAL",
+    "moneyTransmitterCode": "165 Group",
     "sender": {
       "fullName": "DEMBA KASSE",
       "address": "6838 GREBE PLACE",
@@ -42,7 +42,7 @@
     "invoiceDate": "1/07/2025",
     "invoiceNumber": "564",
     "invoiceStatus": "PAID",
-    "moneyTransmitterCode": "GLOBAN CAPITAL",
+    "moneyTransmitterCode": "165 Group",
     "sender": {
       "fullName": "JOHN DOE",
       "address": "123 Main Street",

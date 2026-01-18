@@ -310,7 +310,7 @@ Crea una nueva transacción.
   "invoiceDate": "1/07/2025",
   "invoiceNumber": "186",
   "invoiceStatus": "PAID",
-  "moneyTransmitterCode": "GLOBAN CAPITAL",
+  "moneyTransmitterCode": "165 Group",
   "roleType": "Individual",
   "idType": "State ID",
   "idNumber": "123456789",

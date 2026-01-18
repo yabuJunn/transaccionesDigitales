@@ -54,7 +54,7 @@ const LoginForm = ({
         <div className="text-center">
           <img 
             src="/assets/favicon.png" 
-            alt="Globan Capital logo" 
+            alt="165 Group logo" 
             className="h-16 mx-auto mb-6"
           />
           <h2 className="mt-6 text-center text-3xl font-extrabold text-primary">
